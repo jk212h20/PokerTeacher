@@ -28,6 +28,15 @@ memory-bank/           → This documentation
 - Language saved to localStorage as `pt_lang`
 - `App.rerenderCurrent()` called on lang switch to re-render active screen
 
+## Deployment
+- **Live URL:** https://pokerteacher-production.up.railway.app
+- **GitHub:** https://github.com/jk212h20/PokerTeacher
+- **Railway project:** b97bd5f2-e42c-491d-99b5-f7ee4d4de6e3
+- **Railway service:** 9b47fe02-1af7-4f30-ac23-83e01080e43e
+- **Railway env:** b491cfbf-8d79-4282-a68d-1c52b5f83dd3
+- **Server:** `server.js` — plain Node http, no dependencies, serves static files
+- **Deploy:** `git push` → Railway auto-deploys from GitHub
+
 ## Environment Variables
 None — fully client-side, no backend.
 
