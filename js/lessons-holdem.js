@@ -165,24 +165,22 @@ const MODULE_HOLDEM = {
       },
       afterRender(lang) {
         const es = lang === 'es';
-        const deck = shuffle(buildDeck());
-        const [hand] = dealCards(deck, 2);
         const btn = document.getElementById('btn-reveal-hole');
         const display = document.getElementById('hole-cards-display');
         const label = document.getElementById('sim-label-preflop');
         if (!btn) return;
-        btn.addEventListener('click', () => {
+        let hand = dealCards(shuffle(buildDeck()), 2)[0];
+        btn.onclick = () => {
           display.innerHTML = '';
           animateDeal(display, hand, 'lg', 150);
           label.textContent = es ? '¡Tus cartas!' : 'Your cards!';
           btn.textContent = es ? 'Barajar de nuevo' : 'Shuffle again';
           btn.onclick = () => {
-            const deck2 = shuffle(buildDeck());
-            const [hand2] = dealCards(deck2, 2);
+            hand = dealCards(shuffle(buildDeck()), 2)[0];
             display.innerHTML = '';
-            animateDeal(display, hand2, 'lg', 150);
+            animateDeal(display, hand, 'lg', 150);
           };
-        });
+        };
       }
     },
 
@@ -289,30 +287,33 @@ const MODULE_HOLDEM = {
       },
       afterRender(lang) {
         const es = lang === 'es';
-        const deck = shuffle(buildDeck());
-        const [board] = dealCards(deck, 5);
-        let stage = 0;
         const display = document.getElementById('flop-display');
         const btn = document.getElementById('btn-deal-flop');
         if (!btn || !display) return;
 
-        const slots = [0,1,2,3,4].map(() => {
-          const s = document.createElement('div');
-          s.className = 'card-slot size-md';
-          s.textContent = '?';
-          display.innerHTML = '';
-          return s;
-        });
-        slots.forEach(s => display.appendChild(s));
+        let stage = 0;
+        let board = dealCards(shuffle(buildDeck()), 5)[0];
 
-        btn.addEventListener('click', () => {
+        function resetSlots() {
+          display.innerHTML = '';
+          for (let i = 0; i < 5; i++) {
+            const s = document.createElement('div');
+            s.className = 'card-slot size-md';
+            s.textContent = '?';
+            display.appendChild(s);
+          }
+        }
+
+        resetSlots();
+
+        btn.onclick = () => {
           if (stage === 0) {
-            // Deal flop (3 cards)
+            // Deal flop (3 cards) — use display.children directly (not stale refs)
             for (let i = 0; i < 3; i++) {
               const card = makeCardFromCode(board[i], 'md');
               card.style.opacity = '0';
               card.style.transition = 'opacity 0.3s ease';
-              slots[i].replaceWith(card);
+              display.children[i].replaceWith(card);
               setTimeout(() => { card.style.opacity = '1'; }, i * 120 + 30);
             }
             btn.textContent = es ? 'Repartir Turn' : 'Deal Turn';
@@ -334,20 +335,12 @@ const MODULE_HOLDEM = {
             btn.textContent = es ? 'Nueva mano' : 'New hand';
             stage = 3;
           } else {
-            const deck2 = shuffle(buildDeck());
-            const [board2] = dealCards(deck2, 5);
-            board.splice(0, 5, ...board2);
-            display.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-              const s = document.createElement('div');
-              s.className = 'card-slot size-md';
-              s.textContent = '?';
-              display.appendChild(s);
-            }
+            board = dealCards(shuffle(buildDeck()), 5)[0];
+            resetSlots();
             btn.textContent = es ? 'Repartir Flop' : 'Deal Flop';
             stage = 0;
           }
-        });
+        };
       }
     },
 
