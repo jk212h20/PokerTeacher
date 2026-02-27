@@ -14,6 +14,7 @@ const TRANSLATIONS = {
     'welcome.mod3': "Texas Hold'em",
     'welcome.mod4': 'Tournament Rules',
     'welcome.mod5': 'Starting Hands',
+    'welcome.mod6': 'Board Possibilities',
     'welcome.start': "Let's Play →",
     'welcome.note': 'No experience needed. Tap through at your own pace.',
 
@@ -43,6 +44,7 @@ const TRANSLATIONS = {
     'module.holdem': "Texas Hold'em",
     'module.tournament': 'Tournament Rules',
     'module.starts': 'Starting Hands',
+    'module.board': 'Board Possibilities',
 
     // Lesson labels
     'lesson.of': 'of',
@@ -66,6 +68,7 @@ const TRANSLATIONS = {
     'welcome.mod3': 'Texas Hold\'em',
     'welcome.mod4': 'Reglas de Torneo',
     'welcome.mod5': 'Manos de Inicio',
+    'welcome.mod6': 'Posibilidades del Tablero',
     'welcome.start': 'Empecemos →',
     'welcome.note': 'Sin experiencia necesaria. Ve a tu propio ritmo.',
 
@@ -95,6 +98,7 @@ const TRANSLATIONS = {
     'module.holdem': 'Texas Hold\'em',
     'module.tournament': 'Reglas de Torneo',
     'module.starts': 'Manos de Inicio',
+    'module.board': 'Posibilidades del Tablero',
 
     // Lesson labels
     'lesson.of': 'de',

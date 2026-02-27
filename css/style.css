@@ -278,6 +278,25 @@ body {
   flex-shrink: 0;
 }
 
+.btn-home {
+  background: var(--felt-light);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 17px;
+  cursor: pointer;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-home:active {
+  background: var(--border);
+}
+
 .btn-back:active {
   background: var(--border);
 }
@@ -1513,6 +1532,117 @@ body {
   font-size: 13px;
   color: var(--text-dim);
   line-height: 1.5;
+}
+
+/* ---- Starting Hands & Board Possibilities (Lesson 4) ---- */
+.hand-board-example {
+  background: var(--felt-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 14px 0;
+}
+
+.hb-header {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.hb-board-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.hb-board-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 600;
+  min-width: 44px;
+}
+
+.hb-scenarios {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hb-scenario {
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hb-scenario.good {
+  background: rgba(129,199,132,0.1);
+  border: 1px solid rgba(129,199,132,0.3);
+}
+
+.hb-scenario.danger {
+  background: rgba(232,64,64,0.08);
+  border: 1px solid rgba(232,64,64,0.25);
+}
+
+.hb-scenario-hand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hb-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.hb-result {
+  font-size: 13px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* ---- Connection Grid (Lesson 4) ---- */
+.connection-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.connection-item {
+  background: var(--felt-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.connection-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.connection-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.connection-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
 }
 
 /* ---- Animations ---- */

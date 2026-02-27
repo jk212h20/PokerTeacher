@@ -288,7 +288,19 @@ const QUIZZES = {
 
   'starts-practice-quiz': {
     en: {
-      question: 'The board shows 5♠ 6♠ 7♠. You hold 8♠ 9♠. What\'s true about your hand?',
+      questionHtml() { return `
+        <div style="margin-bottom:12px">What's true about your hand?</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:4px">
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">Board</div>
+            <div style="display:flex;gap:6px">${cardHtml('5','♠','md')}${cardHtml('6','♠','md')}${cardHtml('7','♠','md')}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">You hold</div>
+            <div style="display:flex;gap:6px">${cardHtml('8','♠','md')}${cardHtml('9','♠','md')}</div>
+          </div>
+        </div>`; },
+      question: "Board: 5♠ 6♠ 7♠ — You hold: 8♠ 9♠ — What's true?",
       options: [
         { text: 'You have nothing — low cards, no pair', correct: false, explanation: 'You actually have an incredible hand! 5-6-7-8-9 is a straight flush — five consecutive cards all in spades. That\'s the second-best hand in poker.' },
         { text: 'You have a straight flush — 5-6-7-8-9 all in spades', correct: true, explanation: 'Exactly right! Your suited connectors plus a perfectly matching board made a straight flush. This is why suited connectors have real value — they can become monster hands.' },
@@ -297,12 +309,69 @@ const QUIZZES = {
       ]
     },
     es: {
-      question: 'El tablero muestra 5♠ 6♠ 7♠. Tienes 8♠ 9♠. ¿Qué es cierto sobre tu mano?',
+      questionHtml() { return `
+        <div style="margin-bottom:12px">¿Qué es cierto sobre tu mano?</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:4px">
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">Tablero</div>
+            <div style="display:flex;gap:6px">${cardHtml('5','♠','md')}${cardHtml('6','♠','md')}${cardHtml('7','♠','md')}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">Tienes</div>
+            <div style="display:flex;gap:6px">${cardHtml('8','♠','md')}${cardHtml('9','♠','md')}</div>
+          </div>
+        </div>`; },
+      question: "Tablero: 5♠ 6♠ 7♠ — Tienes: 8♠ 9♠ — ¿Qué es cierto?",
       options: [
         { text: 'No tienes nada — cartas bajas, sin pareja', correct: false, explanation: '¡En realidad tienes una mano increíble! 5-6-7-8-9 es una escalera de color — cinco cartas consecutivas todas en picas. Es la segunda mejor mano del poker.' },
         { text: 'Tienes escalera de color — 5-6-7-8-9 todos en picas', correct: true, explanation: '¡Exactamente! Tus conectadas del mismo palo más un tablero perfecto hicieron una escalera de color. Por eso las conectadas del mismo palo tienen valor real — pueden convertirse en manos monstruosas.' },
         { text: 'Solo tienes color', correct: false, explanation: 'Tienes MÁS que un color — tienes escalera de color. Tu 8-9 más el 5-6-7 del tablero hace cinco picas consecutivas.' },
         { text: 'Tienes escalera pero no color', correct: false, explanation: '¡Tienes ambos! 5-6-7-8-9 es una escalera, y todas las cartas son picas, formando una escalera de color.' },
+      ]
+    }
+  },
+
+  'starts-practice-quiz2': {
+    en: {
+      questionHtml() { return `
+        <div style="margin-bottom:12px">You have three Jacks. How should you feel about this board?</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:4px">
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">Board</div>
+            <div style="display:flex;gap:6px">${cardHtml('J','♥','md')}${cardHtml('8','♥','md')}${cardHtml('9','♥','md')}${cardHtml('10','♥','md')}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">You hold</div>
+            <div style="display:flex;gap:6px">${cardHtml('J','♠','md')}${cardHtml('J','♦','md')}</div>
+          </div>
+        </div>`; },
+      question: "Board: J♥ 8♥ 9♥ 10♥ — You hold: J♠ J♦ (three Jacks) — How should you feel?",
+      options: [
+        { text: 'Very confident — three of a kind is a strong hand', correct: false, explanation: 'Three of a kind IS strong normally — but this board is extremely dangerous. Four hearts means anyone with two hearts already has a flush. And 7-8-9-10-J or 8-9-10-J-Q are straight flush possibilities.' },
+        { text: 'Cautious — the board has 4 hearts and straight flush possibilities', correct: true, explanation: 'Exactly! Your three Jacks are strong in a vacuum, but this board is a nightmare. Anyone with two hearts beats you with a flush. Anyone with Q♥ and any heart, or 7♥ and any heart, already has a straight flush.' },
+        { text: 'Neutral — three of a kind vs. draws is a coin flip', correct: false, explanation: 'This is much worse than a coin flip. With 4 hearts on board, any two-heart hand beats you already — this isn\'t a draw situation, it\'s already lost if anyone has two hearts.' },
+        { text: 'Great — straights and flushes are rare', correct: false, explanation: 'Rare on a dry board, but this board has FOUR hearts in a row — 8♥ 9♥ 10♥ J♥. The flush and straight flush are already built into the board. Your trips are likely behind.' },
+      ]
+    },
+    es: {
+      questionHtml() { return `
+        <div style="margin-bottom:12px">Tienes trío de Jotas. ¿Cómo te sientes con este tablero?</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:4px">
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">Tablero</div>
+            <div style="display:flex;gap:6px">${cardHtml('J','♥','md')}${cardHtml('8','♥','md')}${cardHtml('9','♥','md')}${cardHtml('10','♥','md')}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#9bb89a;margin-bottom:4px">Tienes</div>
+            <div style="display:flex;gap:6px">${cardHtml('J','♠','md')}${cardHtml('J','♦','md')}</div>
+          </div>
+        </div>`; },
+      question: "Tablero: J♥ 8♥ 9♥ 10♥ — Tienes: J♠ J♦ (trío de Jotas) — ¿Cómo te sientes?",
+      options: [
+        { text: 'Muy confiado — el trío es una mano fuerte', correct: false, explanation: 'El trío SÍ es fuerte normalmente — pero este tablero es extremadamente peligroso. Cuatro corazones significa que cualquiera con dos corazones ya tiene color. Y hay posibilidades de escalera de color.' },
+        { text: 'Con precaución — el tablero tiene 4 corazones y posibilidades de escalera de color', correct: true, explanation: '¡Exactamente! Tu trío de Jotas es fuerte en abstracto, pero este tablero es una pesadilla. Cualquiera con dos corazones ya te gana con color. Quien tenga Q♥ o 7♥ con otro corazón ya podría tener escalera de color.' },
+        { text: 'Neutral — trío contra draws es una moneda al aire', correct: false, explanation: 'Esto es mucho peor que una moneda al aire. Con 4 corazones en el tablero, cualquier mano con dos corazones ya te gana — no es un draw, ya perdiste si alguien tiene dos corazones.' },
+        { text: 'Excelente — las escaleras y colores son raros', correct: false, explanation: 'Son raros en un tablero seco, pero este tablero tiene CUATRO corazones seguidos — 8♥ 9♥ 10♥ J♥. El color y la escalera de color ya están casi formados. Tu trío probablemente va perdiendo.' },
       ]
     }
   },
@@ -408,8 +477,12 @@ function loadQuiz(quizId, onComplete) {
     `<button class="quiz-option" data-index="${i}">${opt.text}</button>`
   ).join('');
 
+  const questionContent = typeof data.questionHtml === 'function'
+    ? data.questionHtml()
+    : (data.questionHtml || data.question);
+
   content.innerHTML = `
-    <div class="quiz-question">${data.question}</div>
+    <div class="quiz-question">${questionContent}</div>
     <div class="quiz-options">${optionsHtml}</div>
   `;
 

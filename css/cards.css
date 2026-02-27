@@ -19,31 +19,31 @@
 
 /* ---- Card Sizes ---- */
 .card.size-lg {
-  width: 62px;
-  height: 90px;
+  width: 72px;
+  height: 104px;
+  padding: 6px 6px;
+  font-size: 17px;
+}
+
+.card.size-md {
+  width: 58px;
+  height: 84px;
   padding: 5px 5px;
   font-size: 15px;
 }
 
-.card.size-md {
-  width: 50px;
-  height: 72px;
-  padding: 4px 4px;
-  font-size: 13px;
-}
-
 .card.size-sm {
-  width: 36px;
-  height: 52px;
-  padding: 3px 3px;
-  font-size: 10px;
+  width: 44px;
+  height: 63px;
+  padding: 4px 4px;
+  font-size: 12px;
 }
 
 .card.size-xs {
-  width: 28px;
-  height: 40px;
-  padding: 2px 2px;
-  font-size: 8px;
+  width: 34px;
+  height: 49px;
+  padding: 3px 3px;
+  font-size: 10px;
 }
 
 /* ---- Card Corners ---- */

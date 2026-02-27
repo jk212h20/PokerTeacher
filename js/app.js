@@ -29,7 +29,17 @@ function saveProgress() {
 }
 
 function updateProgressBar() {
-  const pct = TOTAL_LESSONS > 0 ? Math.round((completedLessons.size / TOTAL_LESSONS) * 100) : 0;
+  // Show progress within the current module only
+  const lesson = getLessonByIndex(currentLessonIndex);
+  let pct = 0;
+  if (lesson) {
+    const mod = ALL_MODULES.find(m => m.id === lesson.moduleId);
+    if (mod) {
+      const modLessons = mod.lessons;
+      const completedInMod = modLessons.filter(l => completedLessons.has(l.id)).length;
+      pct = Math.round((completedInMod / modLessons.length) * 100);
+    }
+  }
   const fill = document.getElementById('progress-fill');
   const text = document.getElementById('progress-text');
   if (fill) fill.style.width = pct + '%';
@@ -86,8 +96,14 @@ function advanceFromLesson(lesson, index) {
   saveProgress();
   updateProgressBar();
 
-  // If lesson has a quiz, show it first
-  if (lesson.quizId) {
+  // If lesson has quizzes, chain them
+  if (lesson.quizId && lesson.quizId2) {
+    loadQuiz(lesson.quizId, () => {
+      loadQuiz(lesson.quizId2, () => {
+        loadLesson(index + 1);
+      });
+    });
+  } else if (lesson.quizId) {
     loadQuiz(lesson.quizId, () => {
       loadLesson(index + 1);
     });
@@ -162,6 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Back button
   const btnBack = document.getElementById('btn-back');
   if (btnBack) btnBack.addEventListener('click', goBack);
+
+  // Home button
+  const btnHome = document.getElementById('btn-home');
+  if (btnHome) btnHome.addEventListener('click', () => showScreen('welcome'));
 
   // Restart button
   const btnRestart = document.getElementById('btn-restart');
