@@ -128,14 +128,12 @@ const App = {
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
-  // Start button
+  // Start button — resume from last uncompleted lesson
   const btnStart = document.getElementById('btn-start');
   if (btnStart) {
     btnStart.addEventListener('click', () => {
-      // Resume from where they left off, or start fresh
       let startIndex = 0;
       if (completedLessons.size > 0) {
-        // Find first uncompleted lesson
         for (let i = 0; i < TOTAL_LESSONS; i++) {
           const lesson = getLessonByIndex(i);
           if (!completedLessons.has(lesson.id)) {
@@ -147,6 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
       loadLesson(startIndex);
     });
   }
+
+  // Module jump buttons — tap a module tile to jump directly to its first lesson
+  document.querySelectorAll('.module-jump').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const moduleIndex = parseInt(btn.getAttribute('data-module'), 10);
+      // Find the first lesson belonging to this module
+      const targetModule = ALL_MODULES[moduleIndex];
+      if (!targetModule) return;
+      const firstLessonId = targetModule.lessons[0].id;
+      const lessonIndex = getLessonIndex(firstLessonId);
+      if (lessonIndex >= 0) loadLesson(lessonIndex);
+    });
+  });
 
   // Back button
   const btnBack = document.getElementById('btn-back');

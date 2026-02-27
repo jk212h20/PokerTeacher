@@ -196,6 +196,16 @@ body {
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.module-badge:hover {
+  border-color: var(--gold);
+  background: rgba(255, 210, 70, 0.08);
+}
+.module-badge:active {
+  background: rgba(255, 210, 70, 0.18);
 }
 
 .module-icon {
