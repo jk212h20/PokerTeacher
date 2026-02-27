@@ -325,10 +325,10 @@ const MODULE_BOARD = {
           {
             hole: [['Q','♣'],['J','♦']],
             board: [['K','♠'],['10','♠'],['2','♠']],
-            answer: 'medium',
+            answer: 'danger',
             explanation: es
-              ? 'Tienes un draw de escalera (necesitas un As o un 9). Pero el tablero ya tiene 3 picas — si alguien tiene 2 picas, ya te tiene con color.'
-              : 'You have a straight draw (need an Ace or 9). But the board has 3 spades — if anyone holds 2 spades, they already beat you with a flush.',
+              ? 'Parecía un draw de escalera, pero el tablero ya tiene 3 picas — cualquier oponente con 2 picas YA tiene color y te gana ahora mismo. Y tus outs de escalera (A o 9) también pueden ser de picas, lo que mejoraría el color de ellos en vez de ayudarte. Solo tienes carta alta contra manos hechas. ⚠️ Peligro real.'
+              : 'Looks like a straight draw, but the board already has 3 spades — any opponent holding 2 spades ALREADY has a flush and beats you right now. Your straight outs (Ace or 9) may also be spades, improving their flush instead of helping you. You only have high card against made hands. ⚠️ Real danger.',
           },
           {
             hole: [['5','♦'],['4','♦']],
@@ -386,7 +386,7 @@ const MODULE_BOARD = {
       },
       afterRender(lang) {
         const es = lang === 'es';
-        const correct = ['strong', 'strong', 'medium', 'danger'];
+        const correct = ['strong', 'strong', 'danger', 'danger'];
 
         document.querySelectorAll('.practice-btn').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -408,7 +408,7 @@ const MODULE_BOARD = {
             const expls = [
               es ? 'Dos pares de tope (Ases y Reyes). Tablero seco — sin color, sin escalera. Muy fuerte.' : 'Top two pair (Aces and Kings). Dry board — no flush, no straight. Very strong.',
               es ? '¡Cuatro 9s! Extremadamente fuerte.' : 'Four 9s! Extremely strong.',
-              es ? 'Tienes un draw de escalera, pero el tablero con 3 picas ya amenaza con color para otros.' : "You have a straight draw, but the board's 3 spades already threaten a flush for others.",
+              es ? 'Parecía un draw de escalera, pero el tablero ya tiene 3 picas — cualquier oponente con 2 picas YA tiene color. Solo tienes carta alta contra manos hechas. ⚠️ Peligro real.' : "Looks like a straight draw, but 3 spades on board means anyone holding 2 spades ALREADY has a flush right now. You only have high card against made hands. ⚠️ Real danger.",
               es ? 'Sin pareja, sin draws reales. El tablero de cartas altas no te ayuda en absoluto.' : "No pair, no real draws. The high-card board doesn't help you at all.",
             ];
 
