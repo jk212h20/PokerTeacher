@@ -1,0 +1,168 @@
+/* ============================================
+   POKER TEACHER — Main App
+   Navigation, progress, screen management
+   ============================================ */
+
+// ---- State ----
+let currentLessonIndex = 0;
+let completedLessons = new Set();
+
+// Load saved progress
+try {
+  const saved = localStorage.getItem('pt_progress');
+  if (saved) {
+    const arr = JSON.parse(saved);
+    completedLessons = new Set(arr);
+  }
+} catch(e) {}
+
+// ---- Screen Management ----
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + name);
+  if (el) el.classList.add('active');
+}
+
+// ---- Progress ----
+function saveProgress() {
+  localStorage.setItem('pt_progress', JSON.stringify([...completedLessons]));
+}
+
+function updateProgressBar() {
+  const pct = TOTAL_LESSONS > 0 ? Math.round((completedLessons.size / TOTAL_LESSONS) * 100) : 0;
+  const fill = document.getElementById('progress-fill');
+  const text = document.getElementById('progress-text');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = pct + '%';
+}
+
+// ---- Lesson Rendering ----
+function loadLesson(index) {
+  const lesson = getLessonByIndex(index);
+  if (!lesson) {
+    showScreen('complete');
+    return;
+  }
+
+  currentLessonIndex = index;
+  showScreen('lesson');
+
+  // Module label
+  const modLabel = document.getElementById('lesson-module-label');
+  if (modLabel) modLabel.textContent = t(lesson.moduleLabelKey);
+
+  // Counter
+  const counter = document.getElementById('lesson-counter');
+  if (counter) {
+    counter.textContent = `${lesson.indexInModule + 1} / ${lesson.moduleSize}`;
+  }
+
+  // Content
+  const content = document.getElementById('lesson-content');
+  if (content) {
+    content.innerHTML = lesson.render(currentLang);
+    // Scroll to top
+    content.scrollTop = 0;
+    window.scrollTo(0, 0);
+    // Run afterRender if exists
+    if (lesson.afterRender) {
+      setTimeout(() => lesson.afterRender(currentLang), 50);
+    }
+  }
+
+  // Next button
+  const btnNext = document.getElementById('btn-next');
+  if (btnNext) {
+    btnNext.textContent = t('btn.next');
+    btnNext.onclick = () => advanceFromLesson(lesson, index);
+  }
+
+  updateProgressBar();
+}
+
+function advanceFromLesson(lesson, index) {
+  // Mark lesson complete
+  completedLessons.add(lesson.id);
+  saveProgress();
+  updateProgressBar();
+
+  // If lesson has a quiz, show it first
+  if (lesson.quizId) {
+    loadQuiz(lesson.quizId, () => {
+      loadLesson(index + 1);
+    });
+  } else {
+    loadLesson(index + 1);
+  }
+}
+
+// ---- Back Button ----
+function goBack() {
+  if (currentLessonIndex > 0) {
+    loadLesson(currentLessonIndex - 1);
+  } else {
+    showScreen('welcome');
+  }
+}
+
+// ---- Re-render current lesson (called on lang switch) ----
+const App = {
+  rerenderCurrent() {
+    const screen = document.querySelector('.screen.active');
+    if (!screen) return;
+    const id = screen.id;
+    if (id === 'screen-lesson') {
+      loadLesson(currentLessonIndex);
+    } else if (id === 'screen-quiz') {
+      // Re-load quiz in new language, preserving the onComplete callback
+      if (currentQuiz && currentQuiz.quizId) {
+        loadQuiz(currentQuiz.quizId, currentQuiz.onComplete);
+      }
+    } else if (id === 'screen-welcome') {
+      applyTranslations();
+    } else if (id === 'screen-complete') {
+      applyTranslations();
+    }
+  }
+};
+
+// ---- Init ----
+document.addEventListener('DOMContentLoaded', () => {
+  // Start button
+  const btnStart = document.getElementById('btn-start');
+  if (btnStart) {
+    btnStart.addEventListener('click', () => {
+      // Resume from where they left off, or start fresh
+      let startIndex = 0;
+      if (completedLessons.size > 0) {
+        // Find first uncompleted lesson
+        for (let i = 0; i < TOTAL_LESSONS; i++) {
+          const lesson = getLessonByIndex(i);
+          if (!completedLessons.has(lesson.id)) {
+            startIndex = i;
+            break;
+          }
+        }
+      }
+      loadLesson(startIndex);
+    });
+  }
+
+  // Back button
+  const btnBack = document.getElementById('btn-back');
+  if (btnBack) btnBack.addEventListener('click', goBack);
+
+  // Restart button
+  const btnRestart = document.getElementById('btn-restart');
+  if (btnRestart) {
+    btnRestart.addEventListener('click', () => {
+      completedLessons.clear();
+      saveProgress();
+      updateProgressBar();
+      loadLesson(0);
+    });
+  }
+
+  updateProgressBar();
+  applyTranslations();
+});

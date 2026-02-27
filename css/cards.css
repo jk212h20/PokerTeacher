@@ -1,0 +1,181 @@
+/* ============================================
+   POKER TEACHER — CARD STYLES
+   CSS-rendered playing cards, no images needed
+   ============================================ */
+
+/* ---- Base Card ---- */
+.card {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  position: relative;
+  user-select: none;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+/* ---- Card Sizes ---- */
+.card.size-lg {
+  width: 62px;
+  height: 90px;
+  padding: 5px 5px;
+  font-size: 15px;
+}
+
+.card.size-md {
+  width: 50px;
+  height: 72px;
+  padding: 4px 4px;
+  font-size: 13px;
+}
+
+.card.size-sm {
+  width: 36px;
+  height: 52px;
+  padding: 3px 3px;
+  font-size: 10px;
+}
+
+.card.size-xs {
+  width: 28px;
+  height: 40px;
+  padding: 2px 2px;
+  font-size: 8px;
+}
+
+/* ---- Card Corners ---- */
+.card-corner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.card-corner.top-left {
+  align-self: flex-start;
+}
+
+.card-corner.bottom-right {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
+.card-rank {
+  display: block;
+  font-weight: 800;
+}
+
+.card-suit-small {
+  display: block;
+  font-size: 0.8em;
+}
+
+/* ---- Center Suit ---- */
+.card-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.6em;
+  line-height: 1;
+}
+
+/* ---- Card Colors ---- */
+.card.red .card-corner,
+.card.red .card-center {
+  color: #d32f2f;
+}
+
+.card.black .card-corner,
+.card.black .card-center {
+  color: #1a1a1a;
+}
+
+/* ---- Card Back ---- */
+.card.back {
+  background: linear-gradient(135deg, #1a5c3a 25%, #0f3d26 25%,
+    #0f3d26 50%, #1a5c3a 50%, #1a5c3a 75%, #0f3d26 75%);
+  background-size: 10px 10px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.card.back::after {
+  content: '🃏';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4em;
+  opacity: 0.5;
+}
+
+/* ---- Highlighted / Featured card ---- */
+.card.highlight {
+  box-shadow: 0 0 0 3px #e8c76a, 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* ---- Card flip animation ---- */
+.card-flip-container {
+  perspective: 600px;
+  display: inline-block;
+}
+
+.card-flip-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.45s ease;
+}
+
+.card-flip-container.flipped .card-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.card-flip-front,
+.card-flip-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  position: absolute;
+  top: 0; left: 0;
+}
+
+.card-flip-back {
+  transform: rotateY(180deg);
+}
+
+/* ---- Placeholder / empty card slot ---- */
+.card-slot {
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.15);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.card-slot.size-lg { width: 62px; height: 90px; }
+.card-slot.size-md { width: 50px; height: 72px; }
+.card-slot.size-sm { width: 36px; height: 52px; }
+
+/* ---- Community card area specific ---- */
+.community-row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ---- Hole cards container ---- */
+.hole-cards {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
