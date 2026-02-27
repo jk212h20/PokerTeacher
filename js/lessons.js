@@ -8,6 +8,7 @@ const ALL_MODULES = [
   MODULE_RANKINGS,
   MODULE_HOLDEM,
   MODULE_TOURNAMENT,
+  MODULE_STARTS,
 ];
 
 // Flat list of all lessons with module info attached

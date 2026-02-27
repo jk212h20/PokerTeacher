@@ -242,6 +242,71 @@ const QUIZZES = {
     }
   },
 
+  // ---- Module 5: Starting Hands ----
+
+  'starts-premium-id': {
+    en: {
+      question: 'Which of these hands has the MOST attributes working for it?',
+      options: [
+        { text: 'A♠ K♠ (Ace-King suited)', correct: true, explanation: 'Correct! A-K suited has three active attributes: high cards, connected (can make the best straight), and suited (can make the best flush).' },
+        { text: 'J♣ 6♥ (Jack-Six offsuit)', correct: false, explanation: 'J-6 offsuit has only one weak attribute: one high-ish card. Not connected, not suited, no pair.' },
+        { text: '8♠ 3♦ (Eight-Three offsuit)', correct: false, explanation: '8-3 offsuit has zero strong attributes — low cards, not connected, not suited.' },
+        { text: 'K♦ 2♣ (King-Deuce offsuit)', correct: false, explanation: 'K-2 offsuit has only one attribute: one high card. Not connected, not suited, no pair.' },
+      ]
+    },
+    es: {
+      question: '¿Cuál de estas manos tiene MÁS atributos activos?',
+      options: [
+        { text: 'A♠ K♠ (As-Rey del mismo palo)', correct: true, explanation: '¡Correcto! A-K del mismo palo tiene tres atributos activos: cartas altas, conectadas (puede hacer la mejor escalera) y del mismo palo (puede hacer el mejor color).' },
+        { text: 'J♣ 6♥ (Jota-6 distinto palo)', correct: false, explanation: 'J-6 distinto palo solo tiene un atributo débil: una carta algo alta. No conectada, no del mismo palo, sin pareja.' },
+        { text: '8♠ 3♦ (Ocho-3 distinto palo)', correct: false, explanation: '8-3 distinto palo no tiene atributos fuertes — cartas bajas, no conectadas, no del mismo palo.' },
+        { text: 'K♦ 2♣ (Rey-2 distinto palo)', correct: false, explanation: 'K-2 distinto palo solo tiene un atributo: una carta alta. No conectada, no del mismo palo, sin pareja.' },
+      ]
+    }
+  },
+
+  'starts-relative-quiz': {
+    en: {
+      question: 'You have J♥ J♦. The flop comes A♠ K♣ Q♦. How do your Jacks look now?',
+      options: [
+        { text: 'Still great — Jacks are a high pair', correct: false, explanation: 'Not quite. An Ace, King, and Queen are all higher than a Jack — anyone holding an Ace, King, or Queen now has a higher pair or two pair than you.' },
+        { text: 'In danger — the board is full of cards that beat a pair of Jacks', correct: true, explanation: 'Correct! A-K-Q on the board means anyone with one of those cards has you beat or tied. Also: K-Q-J-10 could complete a straight for someone with a Ten.' },
+        { text: 'Exactly average — middle of the road', correct: false, explanation: 'It\'s worse than average. Three overcards (Ace, King, Queen all beat Jack) means most opponents with any piece of this board are ahead of your Jacks.' },
+        { text: 'Good — you have the lowest pair and no one can outdraw you', correct: false, explanation: 'The opposite is true. You have an underpair — your Jacks are below every card on the board.' },
+      ]
+    },
+    es: {
+      question: 'Tienes J♥ J♦. El flop trae A♠ K♣ Q♦. ¿Cómo se ven tus Jotas ahora?',
+      options: [
+        { text: 'Sigue bien — las Jotas son una pareja alta', correct: false, explanation: 'No del todo. El As, Rey y Reina son todos más altos que la Jota — cualquier jugador con uno de esos tiene una pareja mayor o dos pares.' },
+        { text: 'En peligro — el tablero está lleno de cartas que superan una pareja de Jotas', correct: true, explanation: '¡Correcto! Un tablero con A-K-Q significa que cualquiera con una de esas cartas te supera. Además: K-Q-J-10 podría completar una escalera para quien tenga un 10.' },
+        { text: 'Exactamente promedio — ni bien ni mal', correct: false, explanation: 'Es peor que promedio. Tres cartas superiores (As, Rey, Reina) significa que la mayoría de oponentes con algo en este tablero van por delante de tus Jotas.' },
+        { text: 'Bien — tienes la pareja más baja y nadie puede superarte', correct: false, explanation: 'Es lo contrario. Tienes una pareja por debajo del tablero — tus Jotas están por debajo de todas las cartas del flop.' },
+      ]
+    }
+  },
+
+  'starts-practice-quiz': {
+    en: {
+      question: 'The board shows 5♠ 6♠ 7♠. You hold 8♠ 9♠. What\'s true about your hand?',
+      options: [
+        { text: 'You have nothing — low cards, no pair', correct: false, explanation: 'You actually have an incredible hand! 5-6-7-8-9 is a straight flush — five consecutive cards all in spades. That\'s the second-best hand in poker.' },
+        { text: 'You have a straight flush — 5-6-7-8-9 all in spades', correct: true, explanation: 'Exactly right! Your suited connectors plus a perfectly matching board made a straight flush. This is why suited connectors have real value — they can become monster hands.' },
+        { text: 'You have a flush only', correct: false, explanation: 'You have MORE than a flush — you have a straight flush. Your 8-9 plus the 5-6-7 on the board makes five consecutive spades.' },
+        { text: 'You have a straight but no flush', correct: false, explanation: 'You have both! 5-6-7-8-9 is a straight, and all five cards are spades, making it a straight flush.' },
+      ]
+    },
+    es: {
+      question: 'El tablero muestra 5♠ 6♠ 7♠. Tienes 8♠ 9♠. ¿Qué es cierto sobre tu mano?',
+      options: [
+        { text: 'No tienes nada — cartas bajas, sin pareja', correct: false, explanation: '¡En realidad tienes una mano increíble! 5-6-7-8-9 es una escalera de color — cinco cartas consecutivas todas en picas. Es la segunda mejor mano del poker.' },
+        { text: 'Tienes escalera de color — 5-6-7-8-9 todos en picas', correct: true, explanation: '¡Exactamente! Tus conectadas del mismo palo más un tablero perfecto hicieron una escalera de color. Por eso las conectadas del mismo palo tienen valor real — pueden convertirse en manos monstruosas.' },
+        { text: 'Solo tienes color', correct: false, explanation: 'Tienes MÁS que un color — tienes escalera de color. Tu 8-9 más el 5-6-7 del tablero hace cinco picas consecutivas.' },
+        { text: 'Tienes escalera pero no color', correct: false, explanation: '¡Tienes ambos! 5-6-7-8-9 es una escalera, y todas las cartas son picas, formando una escalera de color.' },
+      ]
+    }
+  },
+
   // ---- Module 4: Tournament ----
 
   'tourn-chips': {

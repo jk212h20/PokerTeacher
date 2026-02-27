@@ -1,6 +1,6 @@
 # Progress — PokerTeacher
 
-## ✅ What Works (Checkpoint 1)
+## ✅ What Works (Checkpoint 2)
 
 ### Infrastructure
 - [x] SPA shell (index.html) — 4 screens: welcome, lesson, quiz, complete
@@ -44,13 +44,20 @@
 - [x] tourn-terms — 10 tournament glossary terms
 - [x] tourn-firsttime — Practical first-tournament advice
 
-**Total: 25 lessons, ~15 quizzes**
+### Module 5: Starting Hands (6 lessons)
+- [x] starts-intro — 4 hand attributes: PAIR / HIGH / CONNECTED / SUITED + comparison
+- [x] starts-premium — AA/KK/AKs/AKo/QQ-JJ with "Why?" expand toggles + quiz
+- [x] starts-playable — Medium pairs, suited connectors, Ace-x, trash with badges + quiz
+- [x] starts-board — 3 interactive boards with flush/straight/fullhouse reveal buttons
+- [x] starts-relative — 3 scenarios: same hand rated differently based on board + quiz
+- [x] starts-practice — 4 hands: Strong/Okay/Danger verdict interaction
+
+**Total: 31 lessons, ~18 quizzes**
 
 ## ❌ Not Built Yet
 
-### Checkpoint 2: Basic Strategy
-- [ ] Module 5: Starting hand selection (premium hands, position)
-- [ ] Module 6: Pre-flop play (when to raise, when to fold)
+### Future Modules
+- [ ] Module 6: Pre-flop play (when to raise, when to fold, position)
 - [ ] Module 7: Post-flop basics (continuation betting, draws)
 - [ ] Module 8: Tournament survival (stack management, ICM intro)
 

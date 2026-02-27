@@ -1019,6 +1019,492 @@ body {
   }
 }
 
+/* ============================================
+   MODULE 5 — STARTING HANDS STYLES
+   ============================================ */
+
+/* ---- Attribute Grid (Lesson 1) ---- */
+.attr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.attr-card {
+  background: var(--felt-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.attr-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.attr-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+
+.attr-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.attr-example {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* ---- Attribute Badges (shared across lessons 2, 3) ---- */
+.attr-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.attr-badge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+
+.attr-badge.on {
+  background: rgba(232,199,106,0.15);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.attr-badge.off {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+  color: var(--text-dim);
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+/* ---- Premium Hands List (Lesson 2) ---- */
+.premium-hands-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.premium-hand {
+  background: var(--felt-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.premium-hand-cards .card-row {
+  margin: 0 0 6px;
+  justify-content: flex-start;
+}
+
+.premium-hand-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.premium-hand-why {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin: 8px 0;
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--gold);
+}
+
+/* ---- Playable Hands List (Lesson 3) ---- */
+.playable-hands-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.playable-hand {
+  background: var(--felt-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.playable-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.playable-cards .card-row {
+  margin: 0;
+  justify-content: flex-start;
+}
+
+.playable-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.playable-note {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* ---- Board Legend (Lesson 4) ---- */
+.board-legend {
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin: 12px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.board-legend-item {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.board-legend-item strong {
+  color: var(--gold);
+}
+
+/* ---- Board Scenarios (Lesson 4) ---- */
+.boards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.board-scenario {
+  background: var(--felt-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 4px 0;
+}
+
+.board-cards .card-row {
+  margin: 0 0 12px;
+  justify-content: flex-start;
+}
+
+.board-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.board-q-btn {
+  background: var(--felt);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+  min-height: 40px;
+}
+
+.board-q-btn:active,
+.board-q-btn.active {
+  background: rgba(232,199,106,0.1);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.board-answer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.board-ans-icon {
+  flex-shrink: 0;
+  font-size: 15px;
+}
+
+/* ---- Scenarios (Lesson 5) ---- */
+.scenario-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 12px 0;
+}
+
+.scenario-block.scenario-good {
+  border-color: rgba(129,199,132,0.35);
+  background: rgba(129,199,132,0.05);
+}
+
+.scenario-block.scenario-danger {
+  border-color: rgba(232,64,64,0.35);
+  background: rgba(232,64,64,0.05);
+}
+
+.scenario-header {
+  margin-bottom: 10px;
+}
+
+.scenario-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.scenario-badge.good {
+  background: rgba(129,199,132,0.15);
+  color: #81c784;
+}
+
+.scenario-badge.danger {
+  background: rgba(232,64,64,0.12);
+  color: #ef9a9a;
+}
+
+.scenario-cards-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.scenario-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scenario-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.scenario-col .card-row {
+  margin: 0;
+  justify-content: flex-start;
+}
+
+.scenario-check {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 10px 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.scenario-check .yes {
+  color: #81c784;
+  font-weight: 800;
+}
+
+.scenario-check .no {
+  color: var(--text-dim);
+  font-weight: 800;
+}
+
+.scenario-verdict {
+  font-size: 14px;
+  line-height: 1.55;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.scenario-verdict strong {
+  color: inherit;
+}
+
+.scenario-verdict.good {
+  color: #a5d6a7;
+  background: rgba(129,199,132,0.08);
+}
+
+.scenario-verdict.danger {
+  color: #ef9a9a;
+  background: rgba(232,64,64,0.07);
+}
+
+/* ---- Practice Scenarios (Lesson 6) ---- */
+.practice-scenarios {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.practice-scenario {
+  background: var(--felt-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.practice-num {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.practice-cards-area {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.practice-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.practice-col-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+
+.practice-col .card-row {
+  margin: 0;
+  justify-content: flex-start;
+}
+
+.practice-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.practice-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  min-height: 44px;
+}
+
+.practice-btn.strong {
+  background: rgba(129,199,132,0.1);
+  border-color: rgba(129,199,132,0.4);
+  color: #a5d6a7;
+}
+
+.practice-btn.medium {
+  background: rgba(232,199,106,0.1);
+  border-color: rgba(232,199,106,0.3);
+  color: var(--gold);
+}
+
+.practice-btn.danger {
+  background: rgba(232,64,64,0.08);
+  border-color: rgba(232,64,64,0.35);
+  color: #ef9a9a;
+}
+
+.practice-btn:active {
+  transform: scale(0.97);
+}
+
+.practice-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
+
+.practice-btn.correct-answer {
+  border-color: #81c784;
+  background: rgba(129,199,132,0.2);
+  opacity: 1;
+}
+
+.practice-btn.wrong-answer {
+  border-color: var(--red);
+  background: rgba(232,64,64,0.15);
+  opacity: 1;
+}
+
+.practice-result {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--radius-sm);
+}
+
+.practice-result-text {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.practice-explanation {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
 /* ---- Animations ---- */
 .card-deal-in {
   animation: dealIn 0.3s ease forwards;
