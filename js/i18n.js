@@ -21,6 +21,7 @@ const TRANSLATIONS = {
     // Buttons
     'btn.next': 'Next →',
     'btn.continue': 'Continue →',
+    'btn.back': '← Back',
     'btn.tryAgain': 'Try Again',
 
     // Quiz
@@ -75,6 +76,7 @@ const TRANSLATIONS = {
     // Buttons
     'btn.next': 'Siguiente →',
     'btn.continue': 'Continuar →',
+    'btn.back': '← Volver',
     'btn.tryAgain': 'Intentar de Nuevo',
 
     // Quiz

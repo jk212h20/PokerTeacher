@@ -328,7 +328,30 @@ body {
 .lesson-footer {
   padding: 12px 0 8px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ---- Bottom Back Button (shared across lesson/quiz/complete) ---- */
+.btn-back-bottom {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 42px;
+  min-width: 120px;
+  transition: border-color 0.2s, color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-back-bottom:active {
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 /* ---- Lesson Content Styles ---- */

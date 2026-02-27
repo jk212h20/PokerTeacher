@@ -7,6 +7,16 @@
 let currentLessonIndex = 0;
 let completedLessons = new Set();
 
+// Navigation history stack.
+// Each entry: { type: 'lesson', index: number }
+//          or { type: 'quiz',   quizId: string, onComplete: fn }
+// Push before navigating forward; pop to go back.
+let navHistory = [];
+
+// The lesson index where the user started this session
+// (used so back doesn't go earlier than where they jumped in)
+let sessionStartIndex = 0;
+
 // Load saved progress
 try {
   const saved = localStorage.getItem('pt_progress');
@@ -47,11 +57,18 @@ function updateProgressBar() {
 }
 
 // ---- Lesson Rendering ----
-function loadLesson(index) {
+// pushHistory: when true, save current screen to history before navigating.
+//              Set false when called from goBack() to avoid double-pushing.
+function loadLesson(index, pushHistory = true) {
   const lesson = getLessonByIndex(index);
   if (!lesson) {
+    if (pushHistory) navHistory.push({ type: 'complete' });
     showScreen('complete');
     return;
+  }
+
+  if (pushHistory) {
+    navHistory.push({ type: 'lesson', index: currentLessonIndex });
   }
 
   currentLessonIndex = index;
@@ -88,6 +105,7 @@ function loadLesson(index) {
   }
 
   updateProgressBar();
+  updateBackButtons();
 }
 
 function advanceFromLesson(lesson, index) {
@@ -112,13 +130,45 @@ function advanceFromLesson(lesson, index) {
   }
 }
 
-// ---- Back Button ----
+// ---- Back Navigation ----
 function goBack() {
-  if (currentLessonIndex > 0) {
-    loadLesson(currentLessonIndex - 1);
+  if (navHistory.length === 0) {
+    showScreen('welcome');
+    updateBackButtons();
+    return;
+  }
+
+  const prev = navHistory.pop();
+
+  if (prev.type === 'lesson') {
+    // Navigate back to that lesson without pushing to history again
+    if (prev.index < sessionStartIndex) {
+      // Gone back past where user started — go home
+      navHistory = [];
+      showScreen('welcome');
+      updateBackButtons();
+    } else {
+      currentLessonIndex = prev.index;
+      loadLesson(prev.index, false);
+    }
+  } else if (prev.type === 'quiz') {
+    // Re-show that quiz without pushing history
+    loadQuizNoHistory(prev.quizId, prev.onComplete);
+  } else if (prev.type === 'complete') {
+    showScreen('complete');
+    updateBackButtons();
   } else {
     showScreen('welcome');
+    updateBackButtons();
   }
+}
+
+// Show/hide bottom back buttons based on whether there's history
+function updateBackButtons() {
+  const hasHistory = navHistory.length > 0;
+  document.querySelectorAll('.btn-back-bottom').forEach(btn => {
+    btn.style.display = hasHistory ? '' : 'none';
+  });
 }
 
 // ---- Re-render current lesson (called on lang switch) ----
@@ -128,11 +178,11 @@ const App = {
     if (!screen) return;
     const id = screen.id;
     if (id === 'screen-lesson') {
-      loadLesson(currentLessonIndex);
+      loadLesson(currentLessonIndex, false);
     } else if (id === 'screen-quiz') {
       // Re-load quiz in new language, preserving the onComplete callback
       if (currentQuiz && currentQuiz.quizId) {
-        loadQuiz(currentQuiz.quizId, currentQuiz.onComplete);
+        loadQuizNoHistory(currentQuiz.quizId, currentQuiz.onComplete);
       }
     } else if (id === 'screen-welcome') {
       applyTranslations();
@@ -144,6 +194,18 @@ const App = {
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
+  // Patch loadQuiz to push history before showing a quiz
+  const _baseLoadQuiz = loadQuiz;
+  window.loadQuiz = function(quizId, onComplete) {
+    navHistory.push({ type: 'quiz', quizId, onComplete });
+    _baseLoadQuiz(quizId, onComplete);
+    updateBackButtons();
+  };
+  window.loadQuizNoHistory = function(quizId, onComplete) {
+    _baseLoadQuiz(quizId, onComplete);
+    updateBackButtons();
+  };
+
   // Start button — resume from last uncompleted lesson
   const btnStart = document.getElementById('btn-start');
   if (btnStart) {
@@ -158,7 +220,9 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       }
-      loadLesson(startIndex);
+      navHistory = [];
+      sessionStartIndex = startIndex;
+      loadLesson(startIndex, false);
     });
   }
 
@@ -166,22 +230,34 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.module-jump').forEach(btn => {
     btn.addEventListener('click', () => {
       const moduleIndex = parseInt(btn.getAttribute('data-module'), 10);
-      // Find the first lesson belonging to this module
       const targetModule = ALL_MODULES[moduleIndex];
       if (!targetModule) return;
       const firstLessonId = targetModule.lessons[0].id;
       const lessonIndex = getLessonIndex(firstLessonId);
-      if (lessonIndex >= 0) loadLesson(lessonIndex);
+      if (lessonIndex >= 0) {
+        navHistory = [];
+        sessionStartIndex = lessonIndex;
+        loadLesson(lessonIndex, false);
+      }
     });
   });
 
-  // Back button
+  // Top back button (header of lesson screen)
   const btnBack = document.getElementById('btn-back');
   if (btnBack) btnBack.addEventListener('click', goBack);
 
+  // Bottom back buttons (lesson footer, quiz footer, complete screen)
+  document.querySelectorAll('.btn-back-bottom').forEach(btn => {
+    btn.addEventListener('click', goBack);
+  });
+
   // Home button
   const btnHome = document.getElementById('btn-home');
-  if (btnHome) btnHome.addEventListener('click', () => showScreen('welcome'));
+  if (btnHome) btnHome.addEventListener('click', () => {
+    navHistory = [];
+    showScreen('welcome');
+    updateBackButtons();
+  });
 
   // Restart button
   const btnRestart = document.getElementById('btn-restart');
@@ -190,10 +266,13 @@ document.addEventListener('DOMContentLoaded', () => {
       completedLessons.clear();
       saveProgress();
       updateProgressBar();
-      loadLesson(0);
+      navHistory = [];
+      sessionStartIndex = 0;
+      loadLesson(0, false);
     });
   }
 
   updateProgressBar();
+  updateBackButtons();
   applyTranslations();
 });
