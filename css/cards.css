@@ -84,29 +84,41 @@
   line-height: 1;
 }
 
-/* ---- Card Colors (4-Color Deck) ---- */
-/* Hearts = Red */
+/* ---- Card Colors (4-Color Deck — colored backgrounds) ---- */
+/* Hearts = Red background */
+.card.suit-hearts {
+  background: linear-gradient(145deg, #c0392b, #922b21);
+}
 .card.suit-hearts .card-corner,
 .card.suit-hearts .card-center {
-  color: #d32f2f;
+  color: #ffffff;
 }
 
-/* Diamonds = Blue */
+/* Diamonds = Blue background */
+.card.suit-diamonds {
+  background: linear-gradient(145deg, #2471a3, #1a5276);
+}
 .card.suit-diamonds .card-corner,
 .card.suit-diamonds .card-center {
-  color: #2471a3;
+  color: #ffffff;
 }
 
-/* Clubs = Green */
+/* Clubs = Green background */
+.card.suit-clubs {
+  background: linear-gradient(145deg, #1e8449, #145a32);
+}
 .card.suit-clubs .card-corner,
 .card.suit-clubs .card-center {
-  color: #1e8449;
+  color: #ffffff;
 }
 
-/* Spades = Black */
+/* Spades = Dark background */
+.card.suit-spades {
+  background: linear-gradient(145deg, #2c3e50, #1a252f);
+}
 .card.suit-spades .card-corner,
 .card.suit-spades .card-center {
-  color: #1a1a1a;
+  color: #ffffff;
 }
 
 /* Legacy 2-color support */
