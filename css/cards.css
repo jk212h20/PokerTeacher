@@ -84,7 +84,32 @@
   line-height: 1;
 }
 
-/* ---- Card Colors ---- */
+/* ---- Card Colors (4-Color Deck) ---- */
+/* Hearts = Red */
+.card.suit-hearts .card-corner,
+.card.suit-hearts .card-center {
+  color: #d32f2f;
+}
+
+/* Diamonds = Blue */
+.card.suit-diamonds .card-corner,
+.card.suit-diamonds .card-center {
+  color: #2471a3;
+}
+
+/* Clubs = Green */
+.card.suit-clubs .card-corner,
+.card.suit-clubs .card-center {
+  color: #1e8449;
+}
+
+/* Spades = Black */
+.card.suit-spades .card-corner,
+.card.suit-spades .card-center {
+  color: #1a1a1a;
+}
+
+/* Legacy 2-color support */
 .card.red .card-corner,
 .card.red .card-center {
   color: #d32f2f;

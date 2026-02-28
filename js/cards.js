@@ -7,6 +7,14 @@ const SUIT_NAMES = ['spades', 'hearts', 'diamonds', 'clubs'];
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const RED_SUITS = ['♥', '♦'];
 
+// 4-color deck: each suit gets its own CSS class
+const SUIT_CLASS_MAP = {
+  '♥': 'suit-hearts',
+  '♦': 'suit-diamonds',
+  '♣': 'suit-clubs',
+  '♠': 'suit-spades'
+};
+
 /**
  * Build a card DOM element.
  * @param {string} rank  - 'A','2'...'K'
@@ -16,8 +24,8 @@ const RED_SUITS = ['♥', '♦'];
  */
 function makeCard(rank, suit, size = 'md', back = false) {
   const card = document.createElement('div');
-  const isRed = RED_SUITS.includes(suit);
-  card.className = `card size-${size}${back ? ' back' : ''} ${isRed ? 'red' : 'black'}`;
+  const suitClass = SUIT_CLASS_MAP[suit] || 'suit-spades';
+  card.className = `card size-${size}${back ? ' back' : ''} ${suitClass}`;
 
   if (back) return card;
 

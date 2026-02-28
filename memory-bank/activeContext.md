@@ -1,13 +1,19 @@
 # Active Context — PokerTeacher
 
-## Current State (2026-02-26)
+## Current State (2026-02-28)
 Checkpoint 2 complete and working. Module 5 (Starting Hands) added — 6 lessons, 3 quizzes, full interactive components. Total: 31 lessons across 5 modules.
+
+Recent changes:
+- Progress bar hidden on welcome/home screen (shown only during lessons/quizzes)
+- Four-color deck implemented on lesson side: ♥ red, ♦ blue, ♣ green, ♠ black
+- Practice drills (AnnaPoker) merged into `/practice/` subdirectory
+- Project moved from `/tmp/PokerTeacher` to `/Users/nick/ActiveProjects/PokerTeacher`
 
 ## Architecture
 ```
 index.html             → SPA shell (4 screens: welcome/lesson/quiz/complete)
 css/style.css          → All styles, mobile-first, dark green felt theme
-css/cards.css          → CSS card rendering (xs/sm/md/lg sizes, red/black/back)
+css/cards.css          → CSS card rendering (xs/sm/md/lg sizes, 4-color deck, back)
 js/i18n.js             → English/Spanish translations, lang toggle, localStorage
 js/cards.js            → buildDeck(), makeCard(), makeCardFromCode(), shuffle()
 js/animations.js       → animateDeal(), buildMiniDeck()
