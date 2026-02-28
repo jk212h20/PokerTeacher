@@ -200,14 +200,15 @@ header h1 {
     position: relative;
     color: #ffffff;
     border: 1px solid rgba(0,0,0,0.4);
-    padding: 4px 5px;
+    padding: 8% 10%;
     overflow: hidden;
     flex-shrink: 0;
+    container-type: inline-size;
 }
 
 /* Suit symbol in top-left corner */
 .card .card-corner {
-    font-size: 1.1rem;
+    font-size: 22cqi;
     line-height: 1;
     opacity: 0.95;
 }
@@ -215,9 +216,9 @@ header h1 {
 /* Rank number at bottom-right */
 .card .rank {
     position: absolute;
-    bottom: 3px;
-    right: 4px;
-    font-size: 3rem;
+    bottom: 4%;
+    right: 8%;
+    font-size: 58cqi;
     line-height: 1;
     font-weight: 800;
     letter-spacing: -0.04em;
@@ -479,15 +480,6 @@ header h1 {
     padding: 2px 3px;
 }
 
-.rankings .card .card-corner {
-    font-size: 0.6rem;
-}
-
-.rankings .card .rank {
-    font-size: 1.6rem;
-    bottom: 1px;
-    right: 2px;
-}
 
 .rankings .rank-name {
     font-size: 0.75rem;
