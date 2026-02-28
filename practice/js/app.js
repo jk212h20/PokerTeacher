@@ -1,7 +1,7 @@
 // Main application logic for Poker Hand Trainer
 
 // Current mode
-let currentMode = 'ranking';
+let currentMode = 'home';
 
 // Game state for ranking mode
 let currentBoard = [];
@@ -48,6 +48,9 @@ function init() {
     // Initialize mode menu
     initModeMenu();
     
+    // Initialize home mode game buttons
+    initHomeMode();
+    
     // Initialize outs mode
     initOutsMode();
     
@@ -69,8 +72,18 @@ function init() {
     // Initialize hand strength mode
     initHandStrengthMode();
     
-    // Start with ranking mode
-    newRound();
+    // Start in home mode (don't auto-start a game)
+}
+
+// Initialize home mode buttons
+function initHomeMode() {
+    const homeGameBtns = document.querySelectorAll('.home-game-btn');
+    homeGameBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            if (mode) switchMode(mode);
+        });
+    });
 }
 
 // Initialize mode menu functionality
@@ -113,7 +126,9 @@ function switchMode(mode) {
         }
     });
     
-    // Hide all modes
+    // Hide all modes (including home)
+    const homeMode = document.getElementById('home-mode');
+    if (homeMode) homeMode.classList.add('hidden');
     rankingMode.classList.add('hidden');
     outsMode.classList.add('hidden');
     whichwinsMode.classList.add('hidden');
@@ -125,7 +140,9 @@ function switchMode(mode) {
     document.body.classList.remove('outs-theme', 'whichwins-theme', 'namehand-theme', 'pick5-theme', 'findnuts-theme', 'readboard-theme', 'handstrength-theme');
     
     // Show selected mode
-    if (mode === 'ranking') {
+    if (mode === 'home') {
+        if (homeMode) homeMode.classList.remove('hidden');
+    } else if (mode === 'ranking') {
         rankingMode.classList.remove('hidden');
         newRound();
     } else if (mode === 'whichwins') {
