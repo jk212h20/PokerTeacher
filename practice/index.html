@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Poker Trainer">
+    <meta name="theme-color" content="#4ecca3">
+    <title>Poker Trainer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+</head>
+<body>
+    <div id="app">
+        <!-- Mode Menu -->
+        <nav class="mode-menu">
+            <button class="menu-toggle" id="menu-toggle">☰</button>
+            <div class="menu-dropdown hidden" id="menu-dropdown">
+                <button class="menu-item" data-mode="home">🏠 Home</button>
+                <button class="menu-item" data-mode="ranking">Hand Ranking</button>
+                <button class="menu-item" data-mode="whichwins">Which Wins?</button>
+                <button class="menu-item" data-mode="outs">Outs Counter</button>
+                <button class="menu-item" data-mode="namehand">Name That Hand</button>
+                <button class="menu-item" data-mode="pick5">Pick Best 5</button>
+                <button class="menu-item" data-mode="findnuts">Find The Nuts</button>
+                <button class="menu-item" data-mode="readboard">Read the Board</button>
+                <button class="menu-item" data-mode="handstrength">Combo Counting</button>
+            </div>
+        </nav>
+
+        <!-- ==================== HOME / LANDING SCREEN ==================== -->
+        <div id="home-mode" class="game-mode">
+            <header>
+                <h1 style="margin: 0 auto; font-size: 1.4rem;">🃏 Poker Trainer</h1>
+            </header>
+
+            <section class="home-welcome">
+                <p class="home-tagline">Practice makes reads. Pick a drill and go.</p>
+            </section>
+
+            <section class="home-group">
+                <div class="home-group-label">📚 Learn the Basics</div>
+                <p class="home-group-desc">Good if you're still learning hand rankings or want to sharpen recognition.</p>
+                <div class="home-game-list">
+                    <button class="home-game-btn" data-mode="namehand">
+                        <span class="home-game-name">Name That Hand</span>
+                        <span class="home-game-hint">Identify the hand type from 5–7 cards</span>
+                    </button>
+                    <button class="home-game-btn" data-mode="ranking">
+                        <span class="home-game-name">Rank the Hands</span>
+                        <span class="home-game-hint">Order 4 hands from best to worst</span>
+                    </button>
+                    <button class="home-game-btn" data-mode="whichwins">
+                        <span class="home-game-name">Which Wins?</span>
+                        <span class="home-game-hint">Pick the winning hand on a given board</span>
+                    </button>
+                </div>
+            </section>
+
+            <section class="home-group">
+                <div class="home-group-label">🎯 Board Reading</div>
+                <p class="home-group-desc">Train your eye to quickly read what a board means for draws and made hands.</p>
+                <div class="home-game-list">
+                    <button class="home-game-btn" data-mode="pick5">
+                        <span class="home-game-name">Pick Best 5</span>
+                        <span class="home-game-hint">Choose the best 5 from 7 cards</span>
+                    </button>
+                    <button class="home-game-btn" data-mode="findnuts">
+                        <span class="home-game-name">Find The Nuts</span>
+                        <span class="home-game-hint">What's the best possible hand on this board?</span>
+                    </button>
+                    <button class="home-game-btn" data-mode="readboard">
+                        <span class="home-game-name">Read the Board</span>
+                        <span class="home-game-hint">Answer quick YES/NO questions about board texture</span>
+                    </button>
+                </div>
+            </section>
+
+            <section class="home-group">
+                <div class="home-group-label">🧮 Advanced</div>
+                <p class="home-group-desc">For when you want to think in numbers — outs, equity, and hand combos.</p>
+                <div class="home-game-list">
+                    <button class="home-game-btn" data-mode="outs">
+                        <span class="home-game-name">Count Your Outs</span>
+                        <span class="home-game-hint">How many cards give you the winning hand?</span>
+                    </button>
+                    <button class="home-game-btn" data-mode="handstrength">
+                        <span class="home-game-name">Combo Counting</span>
+                        <span class="home-game-hint">How many opponent hands beat yours?</span>
+                    </button>
+                </div>
+            </section>
+
+            <footer class="home-footer">
+                <a href="/" class="home-footer-link">← Back to Lessons</a>
+                <a href="card-design/card-demo.html" class="home-footer-link" target="_blank">Card Design</a>
+            </footer>
+        </div>
+
+        <!-- ==================== RANKING MODE ==================== -->
+        <div id="ranking-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="streak">0</span></div>
+                <h1>Rank the Hands</h1>
+                <div class="score">✓ <span id="correct">0</span>/<span id="total">0</span></div>
+            </header>
+
+            <section id="board" class="board">
+                <h2>Board</h2>
+                <div class="cards" id="board-cards">
+                    <!-- 5 community cards -->
+                </div>
+            </section>
+
+            <section id="instruction">
+                <p>Tap hands from <strong>strongest</strong> to <strong>weakest</strong></p>
+                <p class="instruction-hint">Tap a selected hand to unselect it</p>
+            </section>
+
+            <section id="hands" class="hands">
+                <!-- 4 player hands -->
+            </section>
+
+            <section id="result" class="result hidden">
+                <div id="result-message"></div>
+                <button id="next-btn" class="btn-next">Next Hand →</button>
+            </section>
+
+            <section id="rankings" class="rankings hidden">
+                <h3>Correct Order:</h3>
+                <ol id="rankings-list"></ol>
+            </section>
+        </div>
+
+        <!-- ==================== WHICH WINS MODE ==================== -->
+        <div id="whichwins-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="ww-streak">0</span></div>
+                <h1>Which Wins?</h1>
+                <div class="score">✓ <span id="ww-correct">0</span>/<span id="ww-total">0</span></div>
+            </header>
+
+            <section class="board ww-board">
+                <h2>Board</h2>
+                <div class="cards" id="ww-board-cards"></div>
+            </section>
+
+            <section class="ww-hands-container">
+                <div class="ww-hand" id="ww-hand1">
+                    <h3>Hand 1</h3>
+                    <div class="cards" id="ww-hand1-cards"></div>
+                    <div class="hand-description" id="ww-hand1-desc"></div>
+                </div>
+                <div class="ww-vs">VS</div>
+                <div class="ww-hand" id="ww-hand2">
+                    <h3>Hand 2</h3>
+                    <div class="cards" id="ww-hand2-cards"></div>
+                    <div class="hand-description" id="ww-hand2-desc"></div>
+                </div>
+            </section>
+
+            <section class="ww-choices">
+                <button class="ww-choice" id="ww-choice-1" data-choice="1">Hand 1</button>
+                <button class="ww-choice ww-choice-tie" id="ww-choice-tie" data-choice="tie">Tie</button>
+                <button class="ww-choice" id="ww-choice-2" data-choice="2">Hand 2</button>
+            </section>
+
+            <section id="ww-result" class="result hidden">
+                <div id="ww-result-message"></div>
+                <button id="next-ww-btn" class="btn-next">Next Hand →</button>
+            </section>
+        </div>
+
+        <!-- ==================== OUTS MODE ==================== -->
+        <div id="outs-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="outs-streak">0</span></div>
+                <h1>Count Your Outs</h1>
+                <div class="score">✓ <span id="outs-correct">0</span>/<span id="outs-total">0</span></div>
+            </header>
+
+            <section class="board outs-board">
+                <h2>Turn</h2>
+                <div class="cards" id="outs-board-cards">
+                    <!-- 4 community cards -->
+                </div>
+            </section>
+
+            <section class="outs-hands-container">
+                <div class="outs-hand-section">
+                    <h3>Your Hand</h3>
+                    <div class="cards" id="your-hand-cards"></div>
+                    <div class="hand-description" id="your-hand-desc"></div>
+                </div>
+                <div class="outs-hand-section opponent">
+                    <h3>Opponent</h3>
+                    <div class="cards" id="opponent-hand-cards"></div>
+                    <div class="hand-description" id="opponent-hand-desc"></div>
+                </div>
+            </section>
+
+            <section class="outs-scenario" id="outs-scenario">
+                <p id="scenario-text">How many outs do you have to win?</p>
+            </section>
+
+            <section class="outs-input-section">
+                <div class="outs-input-wrapper">
+                    <input type="number" id="outs-input" class="outs-input" placeholder="?" min="0" max="52" inputmode="numeric">
+                    <span class="outs-label">outs</span>
+                </div>
+                <button id="check-outs-btn" class="btn-check">Check</button>
+            </section>
+
+            <section id="outs-result" class="result hidden">
+                <div id="outs-result-message"></div>
+                <div id="outs-explanation" class="outs-explanation"></div>
+                <button id="next-outs-btn" class="btn-next">Next Scenario →</button>
+            </section>
+        </div>
+
+        <!-- ==================== NAME THAT HAND MODE ==================== -->
+        <div id="namehand-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="nh-streak">0</span></div>
+                <h1>Name That Hand</h1>
+                <div class="score">✓ <span id="nh-correct">0</span>/<span id="nh-total">0</span></div>
+            </header>
+
+            <section class="nh-settings">
+                <span class="nh-setting-label">Cards:</span>
+                <div class="nh-card-count-btns" id="nh-card-count">
+                    <button class="nh-count-btn active" data-count="5">5</button>
+                    <button class="nh-count-btn" data-count="6">6</button>
+                    <button class="nh-count-btn" data-count="7">7</button>
+                </div>
+            </section>
+
+            <section class="nh-display">
+                <h2>What's the best hand?</h2>
+                <div class="cards nh-cards" id="nh-cards">
+                    <!-- 5-7 card hand -->
+                </div>
+                <div class="nh-hand-desc" id="nh-hand-desc"></div>
+            </section>
+
+            <section class="nh-choices" id="nh-choices">
+                <!-- Choice buttons generated by JS -->
+            </section>
+
+            <section id="nh-result" class="result hidden">
+                <div id="nh-result-message"></div>
+                <button id="next-nh-btn" class="btn-next">Next Hand →</button>
+            </section>
+        </div>
+
+        <!-- ==================== PICK BEST 5 MODE ==================== -->
+        <div id="pick5-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="p5-streak">0</span></div>
+                <h1>Pick Best 5</h1>
+                <div class="score">✓ <span id="p5-correct">0</span>/<span id="p5-total">0</span></div>
+            </header>
+
+            <section class="p5-instruction">
+                <p>Select <strong>5 cards</strong> that make the best hand</p>
+                <div class="p5-counter">Selected: <span id="p5-selected-count">0</span>/5</div>
+            </section>
+
+            <section class="p5-display">
+                <div class="cards p5-cards" id="p5-cards">
+                    <!-- 7 cards to choose from -->
+                </div>
+            </section>
+
+            <section class="p5-actions">
+                <button id="p5-clear-btn" class="btn-clear">Clear</button>
+                <button id="p5-check-btn" class="btn-check" disabled>Check</button>
+            </section>
+
+            <section class="p5-hand-info">
+                <div class="p5-hand-desc" id="p5-hand-desc"></div>
+                <div class="p5-best-hand-desc" id="p5-best-hand-desc"></div>
+            </section>
+
+            <section id="p5-result" class="result hidden">
+                <div id="p5-result-message"></div>
+                <button id="next-p5-btn" class="btn-next">Next Hand →</button>
+            </section>
+        </div>
+
+        <!-- ==================== FIND THE NUTS MODE ==================== -->
+        <div id="findnuts-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="fn-streak">0</span></div>
+                <h1>Find The Nuts</h1>
+                <div class="score">✓ <span id="fn-correct">0</span>/<span id="fn-total">0</span></div>
+            </header>
+
+            <section class="fn-settings">
+                <span class="fn-setting-label">Board:</span>
+                <div class="fn-size-btns" id="fn-board-size">
+                    <button class="fn-size-btn" data-size="3">Flop</button>
+                    <button class="fn-size-btn" data-size="4">Turn</button>
+                    <button class="fn-size-btn active" data-size="5">River</button>
+                </div>
+            </section>
+
+            <section class="board fn-board">
+                <h2>Board</h2>
+                <div class="cards" id="fn-board-cards"></div>
+            </section>
+
+            <section class="fn-instruction">
+                <p>Select the <strong>2 cards</strong> that make the nuts</p>
+                <p class="fn-note">Any hand that can't be beaten counts ✓</p>
+                <div class="fn-counter">Selected: <span id="fn-selected-count">0</span>/2</div>
+            </section>
+
+            <section class="fn-grid-container">
+                <div class="fn-card-grid" id="fn-card-grid">
+                    <!-- 52 card grid generated by JS -->
+                </div>
+            </section>
+
+            <section class="fn-actions">
+                <button id="fn-clear-btn" class="btn-clear">Clear</button>
+                <button id="fn-check-btn" class="btn-check" disabled>Check</button>
+            </section>
+
+            <section class="fn-nuts-display" id="fn-nuts-display">
+                <!-- Shows nut hands when wrong -->
+            </section>
+
+            <section id="fn-result" class="result hidden">
+                <div id="fn-result-message"></div>
+                <button id="next-fn-btn" class="btn-next">Next Board →</button>
+            </section>
+        </div>
+
+        <!-- ==================== READ THE BOARD MODE ==================== -->
+        <div id="readboard-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="rb-streak">0</span></div>
+                <h1>Read the Board</h1>
+                <div class="score">✓ <span id="rb-correct">0</span>/<span id="rb-total">0</span></div>
+            </header>
+
+            <section class="rb-settings">
+                <span class="rb-setting-label">Board:</span>
+                <div class="rb-size-btns" id="rb-board-size">
+                    <button class="rb-size-btn" data-size="3">Flop</button>
+                    <button class="rb-size-btn" data-size="4">Turn</button>
+                    <button class="rb-size-btn active" data-size="5">River</button>
+                </div>
+            </section>
+
+            <section class="board rb-board">
+                <h2>Board</h2>
+                <div class="cards" id="rb-board-cards"></div>
+            </section>
+
+            <section class="rb-questions-container" id="rb-questions">
+                <!-- Questions generated by JS -->
+            </section>
+
+            <section class="rb-actions">
+                <button id="rb-check-btn" class="btn-check" disabled>Check Answers</button>
+            </section>
+
+            <section id="rb-result" class="result hidden">
+                <div id="rb-result-message"></div>
+                <button id="next-rb-btn" class="btn-next">Next Board →</button>
+            </section>
+        </div>
+
+        <!-- ==================== COMBO COUNTING MODE ==================== -->
+        <div id="handstrength-mode" class="game-mode hidden">
+            <header>
+                <div class="streak">🔥 <span id="hs-streak">0</span></div>
+                <h1>Combo Counting</h1>
+                <div class="score">✓ <span id="hs-correct">0</span>/<span id="hs-total">0</span></div>
+            </header>
+
+            <section class="board hs-board">
+                <h2>Board</h2>
+                <div class="cards" id="hs-board-cards"></div>
+            </section>
+
+            <section class="hs-hero-section">
+                <h3>Your Hand</h3>
+                <div class="cards" id="hs-hero-cards"></div>
+                <div class="hs-hero-desc" id="hs-hero-desc"></div>
+            </section>
+
+            <!-- Quiz Mode UI -->
+            <section class="hs-quiz-mode" id="hs-quiz-mode">
+                <section class="hs-question">
+                    <p>How many of the <strong>990</strong> possible opponent hands beat you?</p>
+                </section>
+
+                <section class="hs-options" id="hs-options">
+                    <!-- Options generated by JS -->
+                </section>
+            </section>
+
+            <section class="hs-explanation" id="hs-explanation">
+                <!-- Explanation shown after answer -->
+            </section>
+
+            <section id="hs-result" class="result hidden">
+                <div id="hs-result-message"></div>
+                <button id="next-hs-btn" class="btn-next">Next Hand →</button>
+            </section>
+        </div>
+    </div>
+
+    <script src="js/cards.js"></script>
+    <script src="js/poker.js"></script>
+    <script src="js/templates.js"></script>
+    <script src="js/outs.js"></script>
+    <script src="js/whichwins.js"></script>
+    <script src="js/namehand.js"></script>
+    <script src="js/pick5.js"></script>
+    <script src="js/findnuts.js"></script>
+    <script src="js/readboard.js"></script>
+    <script src="js/handstrength.js"></script>
+    <script src="js/app.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,76 @@
+/*
+ * ============================================================
+ *  Four-Color Poker Card Design
+ *  Copy this file into any project to use the card styles.
+ *
+ *  HTML structure for a card:
+ *    <div class="card hearts">
+ *      <span class="card-corner">♥</span>
+ *      <span class="rank">A</span>
+ *    </div>
+ *
+ *  Suit classes: .hearts  .diamonds  .spades  .clubs
+ * ============================================================
+ */
+
+/* ── Base card ─────────────────────────────────────────────── */
+.card {
+    width: 52px;
+    height: 72px;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+    user-select: none;
+    position: relative;
+    color: #ffffff;
+    border: 1px solid rgba(0,0,0,0.4);
+    padding: 4px 5px;
+}
+
+/* Suit symbol — top-left corner */
+.card .card-corner {
+    font-size: 1.1rem;
+    line-height: 1;
+    opacity: 0.95;
+}
+
+/* Rank — large, bottom-right */
+.card .rank {
+    position: absolute;
+    bottom: 3px;
+    right: 4px;
+    font-size: 3rem;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* ── Four-color suit backgrounds ───────────────────────────── */
+.card.hearts {
+    background: linear-gradient(145deg, #c0392b, #922b21);
+}
+
+.card.diamonds {
+    background: linear-gradient(145deg, #2471a3, #1a5276);
+}
+
+.card.spades {
+    background: linear-gradient(145deg, #2c3e50, #1a252f);
+}
+
+.card.clubs {
+    background: linear-gradient(145deg, #1e8449, #145a32);
+}
+
+/* ── Optional: hand / row of cards ────────────────────────── */
+.card-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: flex-end;
+}

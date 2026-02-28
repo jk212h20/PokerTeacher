@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four-Color Card Design</title>
+    <link rel="stylesheet" href="cards.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-family: system-ui, sans-serif;
+            padding: 40px 24px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.4rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            color: #e0e0e0;
+        }
+
+        .divider {
+            width: 200px;
+            height: 2px;
+            background: #c0392b;
+            margin: 0 auto 36px;
+        }
+
+        /* One row per suit */
+        .suit-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        /* Usage section */
+        .usage {
+            margin-top: 48px;
+            max-width: 680px;
+            margin-left: auto;
+            margin-right: auto;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 24px 28px;
+        }
+
+        .usage h2 {
+            font-size: 0.85rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 16px;
+        }
+
+        .usage pre {
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: #c8e6c9;
+            white-space: pre-wrap;
+        }
+
+        .usage .comment { color: #888; }
+    </style>
+</head>
+<body>
+
+    <h1>Four Color Cards</h1>
+    <div class="divider"></div>
+
+    <!-- Cards rendered by JS below -->
+    <div id="hearts-row"   class="suit-row"></div>
+    <div id="spades-row"   class="suit-row"></div>
+    <div id="diamonds-row" class="suit-row"></div>
+    <div id="clubs-row"    class="suit-row"></div>
+
+    <div class="usage">
+        <h2>How to use in your project</h2>
+        <pre>
+<span class="comment">/* 1. Copy cards.css and cards-ui.js into your project */</span>
+
+<span class="comment">/* 2. Link them in your HTML */</span>
+&lt;link rel="stylesheet" href="cards.css"&gt;
+&lt;script src="cards-ui.js"&gt;&lt;/script&gt;
+
+<span class="comment">/* 3. Create cards in JS */</span>
+<span class="comment">// From a shorthand string ("Ah", "Ts", "2d", "Kc")</span>
+const el = cardElementFromString("Ah");
+container.appendChild(el);
+
+<span class="comment">// From a card object</span>
+const card = parseCard("Kh");
+const el   = createCardElement(card);
+container.appendChild(el);
+
+<span class="comment">// Render a whole hand at once</span>
+renderCards(document.getElementById("hand"), [
+    parseCard("Ah"), parseCard("Kh"), parseCard("Qh"),
+    parseCard("Jh"), parseCard("Th")
+]);
+
+<span class="comment">/* 4. Or write the HTML directly */</span>
+&lt;div class="card hearts"&gt;
+    &lt;span class="card-corner"&gt;♥&lt;/span&gt;
+    &lt;span class="rank"&gt;A&lt;/span&gt;
+&lt;/div&gt;
+        </pre>
+    </div>
+
+    <script src="cards-ui.js"></script>
+    <script>
+        const RANKS_DISPLAY_ORDER = ['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+
+        const rows = {
+            hearts:   document.getElementById('hearts-row'),
+            spades:   document.getElementById('spades-row'),
+            diamonds: document.getElementById('diamonds-row'),
+            clubs:    document.getElementById('clubs-row'),
+        };
+
+        for (const [suit, container] of Object.entries(rows)) {
+            RANKS_DISPLAY_ORDER.forEach(rank => {
+                container.appendChild(createCardElement(createCard(rank, suit)));
+            });
+        }
+    </script>
+</body>
+</html>

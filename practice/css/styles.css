@@ -1,0 +1,2669 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-color: #1a1a2e;
+    --card-bg: #ffffff;
+    --text-color: #eee;
+    --text-muted: #888;
+    --accent: #4ecca3;
+    --danger: #ff6b6b;
+    --success: #4ecca3;
+    --card-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --hand-bg: #16213e;
+    --hand-selected: #0f3460;
+    --hand-correct: #1b4332;
+    --hand-wrong: #5c1a1a;
+}
+
+/* Outs Mode Color Theme - Purple/Orange */
+.outs-theme {
+    --bg-color: #1e1a2e;
+    --accent: #e89b50;
+    --success: #e89b50;
+    --hand-bg: #251e3e;
+    --hand-selected: #3d2860;
+    --hand-correct: #2d4a32;
+}
+
+/* Which Wins Mode Color Theme - Blue/Cyan */
+.whichwins-theme {
+    --bg-color: #1a2430;
+    --accent: #5bc0eb;
+    --success: #5bc0eb;
+    --hand-bg: #1e3040;
+    --hand-selected: #264060;
+    --hand-correct: #1b4332;
+}
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    padding: 8px;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+    transition: background-color 0.3s ease;
+}
+
+#app {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ==================== MODE MENU ==================== */
+.mode-menu {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+}
+
+.menu-toggle {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-toggle:hover,
+.menu-toggle:active {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--hand-bg);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 100;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.menu-dropdown.hidden {
+    display: none;
+}
+
+.menu-item {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.menu-item:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.menu-item.active {
+    color: var(--accent);
+    background: rgba(78, 204, 163, 0.1);
+}
+
+.outs-theme .menu-item.active {
+    background: rgba(232, 155, 80, 0.1);
+}
+
+/* ==================== GAME MODES ==================== */
+.game-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.game-mode.hidden {
+    display: none;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+header h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.streak, .score {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.streak span, .score span {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+/* Board Section */
+.board {
+    text-align: center;
+}
+
+.board h2 {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.board .cards {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Cards */
+.card {
+    width: 52px;
+    height: 72px;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+    user-select: none;
+    position: relative;
+    color: #ffffff;
+    border: 1px solid rgba(0,0,0,0.4);
+    padding: 4px 5px;
+}
+
+/* Suit symbol in top-left corner */
+.card .card-corner {
+    font-size: 1.1rem;
+    line-height: 1;
+    opacity: 0.95;
+}
+
+/* Rank number at bottom-right */
+.card .rank {
+    position: absolute;
+    bottom: 3px;
+    right: 4px;
+    font-size: 3rem;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* 4-Color Deck - colored backgrounds */
+.card.hearts {
+    background: linear-gradient(145deg, #c0392b, #922b21);
+}
+
+.card.diamonds {
+    background: linear-gradient(145deg, #2471a3, #1a5276);
+}
+
+.card.spades {
+    background: linear-gradient(145deg, #2c3e50, #1a252f);
+}
+
+.card.clubs {
+    background: linear-gradient(145deg, #1e8449, #145a32);
+}
+
+/* Instruction */
+#instruction {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    padding: 4px 0;
+}
+
+#instruction strong {
+    color: var(--accent);
+}
+
+#instruction .instruction-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+/* Reset Button */
+.btn-reset {
+    display: inline-block;
+    margin-top: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 2px solid var(--text-muted);
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-reset:hover {
+    color: var(--text-color);
+    border-color: var(--text-color);
+}
+
+.btn-reset:active {
+    transform: scale(0.95);
+}
+
+/* Hands Section */
+.hands {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.hand {
+    background: var(--hand-bg);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 3px solid transparent;
+    position: relative;
+}
+
+.hand:active {
+    transform: scale(0.97);
+}
+
+.hand.selected {
+    border-color: var(--accent);
+    background: var(--hand-selected);
+}
+
+.hand.correct {
+    background: var(--hand-correct);
+    border-color: var(--success);
+}
+
+.hand.wrong {
+    background: var(--hand-wrong);
+    border-color: var(--danger);
+}
+
+.hand.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.hand .player {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hand .hole-cards {
+    display: flex;
+    gap: 4px;
+}
+
+.hand .card {
+    width: 52px;
+    height: 72px;
+}
+
+.hand .order-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: var(--bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.hand .hand-name {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-align: center;
+    min-height: 1.4em;
+}
+
+/* Result Section */
+.result {
+    text-align: center;
+    padding: 16px;
+}
+
+.result.hidden {
+    display: none;
+}
+
+#result-message,
+#outs-result-message {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+.result.perfect #result-message,
+.result.perfect #outs-result-message {
+    color: var(--success);
+}
+
+.result.failed #result-message,
+.result.failed #outs-result-message {
+    color: var(--danger);
+}
+
+.btn-next,
+.btn-check {
+    background: var(--accent);
+    color: var(--bg-color);
+    border: none;
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.btn-next:active,
+.btn-check:active {
+    transform: scale(0.95);
+}
+
+.btn-check:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Rankings reveal */
+.rankings {
+    background: var(--hand-bg);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.rankings.hidden {
+    display: none;
+}
+
+.rankings h3 {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rankings ol {
+    list-style: none;
+    counter-reset: ranking;
+}
+
+.rankings li {
+    counter-increment: ranking;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.rankings li:last-child {
+    border-bottom: none;
+}
+
+.rankings li::before {
+    content: counter(ranking);
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    color: var(--bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.rankings .rank-cards {
+    display: flex;
+    gap: 3px;
+}
+
+.rankings .card {
+    width: 28px;
+    height: 38px;
+    padding: 2px 3px;
+}
+
+.rankings .card .card-corner {
+    font-size: 0.6rem;
+}
+
+.rankings .card .rank {
+    font-size: 1.6rem;
+    bottom: 1px;
+    right: 2px;
+}
+
+.rankings .rank-name {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+/* ==================== OUTS MODE STYLES ==================== */
+.outs-board {
+    margin-bottom: 8px;
+}
+
+.outs-hands-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.outs-hand-section {
+    background: var(--hand-bg);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.outs-hand-section h3 {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.outs-hand-section.opponent h3 {
+    color: var(--danger);
+}
+
+.outs-hand-section .cards {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.hand-description {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    min-height: 1.4em;
+}
+
+.outs-scenario {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.outs-scenario p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.outs-input-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.outs-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.outs-input {
+    width: 70px;
+    height: 50px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    border: 3px solid var(--text-muted);
+    border-radius: 10px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.outs-input:focus {
+    border-color: var(--accent);
+}
+
+.outs-input.correct {
+    border-color: var(--success);
+    background: var(--hand-correct);
+}
+
+.outs-input.wrong {
+    border-color: var(--danger);
+    background: var(--hand-wrong);
+}
+
+.outs-input::placeholder {
+    color: var(--text-muted);
+}
+
+.outs-label {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.outs-explanation {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.outs-cards-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.outs-cards-display {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+}
+
+.out-card {
+    display: inline-block;
+    padding: 4px 6px;
+    background: var(--card-bg);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 32px;
+    text-align: center;
+}
+
+/* 4-Color Deck for Outs mode out cards */
+.out-card.hearts {
+    color: #e63946;  /* Red */
+}
+
+.out-card.diamonds {
+    color: #2196f3;  /* Blue */
+}
+
+.out-card.spades {
+    color: #1d3557;  /* Black */
+}
+
+.out-card.clubs {
+    color: #2e7d32;  /* Green */
+}
+
+/* Legacy support */
+.out-card.red {
+    color: #e63946;
+}
+
+.out-card.black {
+    color: #1d3557;
+}
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.hand.shake,
+.outs-input.shake {
+    animation: shake 0.3s ease;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.hand.pop {
+    animation: pop 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 360px) {
+    .card {
+        width: 40px;
+        height: 56px;
+    }
+    
+    .hand .card {
+        width: 38px;
+        height: 52px;
+    }
+    
+    .board .cards {
+        gap: 4px;
+    }
+    
+    .outs-hands-container {
+        gap: 8px;
+    }
+    
+    .outs-hand-section {
+        padding: 8px;
+    }
+    
+    .outs-input {
+        width: 60px;
+        height: 44px;
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    body {
+        padding: 20px;
+    }
+    
+    .card {
+        width: 56px;
+        height: 76px;
+        font-size: 1.4rem;
+    }
+    
+    .hand .card {
+        width: 50px;
+        height: 68px;
+    }
+    
+    .hands {
+        gap: 14px;
+    }
+    
+    .hand {
+        padding: 14px;
+    }
+    
+    .outs-input {
+        width: 80px;
+        height: 56px;
+        font-size: 1.8rem;
+    }
+}
+
+/* ==================== WHICH WINS MODE STYLES ==================== */
+.ww-board {
+    margin-bottom: 12px;
+}
+
+.ww-hands-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.ww-hand {
+    background: var(--hand-bg);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    flex: 1;
+    max-width: 160px;
+}
+
+.ww-hand h3 {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.ww-hand .cards {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.ww-vs {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-muted);
+    padding: 0 8px;
+}
+
+.ww-choices {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.ww-choice {
+    flex: 1;
+    max-width: 120px;
+    padding: 14px 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 3px solid var(--hand-bg);
+    border-radius: 10px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.ww-choice:active {
+    transform: scale(0.95);
+}
+
+.ww-choice:hover {
+    border-color: var(--accent);
+}
+
+.ww-choice.ww-choice-tie {
+    background: transparent;
+    border-color: var(--text-muted);
+}
+
+.ww-choice.selected {
+    border-color: var(--accent);
+    background: var(--hand-selected);
+}
+
+.ww-choice.correct {
+    border-color: var(--success);
+    background: var(--hand-correct);
+}
+
+.ww-choice.wrong {
+    border-color: var(--danger);
+    background: var(--hand-wrong);
+}
+
+.ww-choice:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#ww-result-message {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+.result.perfect #ww-result-message {
+    color: var(--success);
+}
+
+.result.failed #ww-result-message {
+    color: var(--danger);
+}
+
+.whichwins-theme .menu-item.active {
+    background: rgba(91, 192, 235, 0.1);
+}
+
+/* ==================== NAME THAT HAND MODE STYLES ==================== */
+
+/* Name Hand Mode Color Theme - Green/Teal */
+.namehand-theme {
+    --bg-color: #1a2e28;
+    --accent: #50c878;
+    --success: #50c878;
+    --hand-bg: #1e3e35;
+    --hand-selected: #286050;
+    --hand-correct: #1b4332;
+}
+
+.nh-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.nh-setting-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.nh-card-count-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.nh-count-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--hand-bg);
+    border-radius: 8px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.nh-count-btn:hover {
+    border-color: var(--accent);
+}
+
+.nh-count-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg-color);
+}
+
+.nh-display {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.nh-display h2 {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.nh-cards {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.nh-hand-desc {
+    font-size: 0.85rem;
+    color: var(--accent);
+    min-height: 1.4em;
+    font-weight: 500;
+}
+
+.nh-choices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.nh-choice {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 2px solid var(--hand-bg);
+    border-radius: 8px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.nh-choice:active {
+    transform: scale(0.95);
+}
+
+.nh-choice:hover {
+    border-color: var(--accent);
+}
+
+.nh-choice.selected {
+    border-color: var(--accent);
+    background: var(--hand-selected);
+}
+
+.nh-choice.correct {
+    border-color: var(--success);
+    background: var(--hand-correct);
+}
+
+.nh-choice.wrong {
+    border-color: var(--danger);
+    background: var(--hand-wrong);
+}
+
+.nh-choice:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#nh-result-message {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+.result.perfect #nh-result-message {
+    color: var(--success);
+}
+
+.result.failed #nh-result-message {
+    color: var(--danger);
+}
+
+.namehand-theme .menu-item.active {
+    background: rgba(80, 200, 120, 0.1);
+}
+
+/* ==================== PICK BEST 5 MODE STYLES ==================== */
+
+/* Pick 5 Mode Color Theme - Red/Coral */
+.pick5-theme {
+    --bg-color: #2e1a1a;
+    --accent: #ff6b6b;
+    --success: #4ecca3;
+    --hand-bg: #3e1e1e;
+    --hand-selected: #602828;
+    --hand-correct: #1b4332;
+}
+
+.p5-instruction {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.p5-instruction p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.p5-instruction strong {
+    color: var(--accent);
+}
+
+.p5-counter {
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.p5-display {
+    text-align: center;
+    padding: 12px 0;
+}
+
+.p5-cards {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.p5-cards .card {
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 3px solid transparent;
+}
+
+.p5-cards .card:hover {
+    transform: translateY(-4px);
+}
+
+.p5-cards .card.selected {
+    border-color: var(--accent);
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.p5-cards .card.correct {
+    border-color: var(--success);
+    box-shadow: 0 0 10px var(--success);
+}
+
+.p5-cards .card.wrong {
+    border-color: var(--danger);
+    opacity: 0.7;
+}
+
+.p5-cards .card.best-choice {
+    border-color: var(--success);
+    box-shadow: 0 0 12px var(--success);
+}
+
+.p5-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.btn-clear {
+    background: transparent;
+    color: var(--text-muted);
+    border: 2px solid var(--text-muted);
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-clear:hover {
+    color: var(--text-color);
+    border-color: var(--text-color);
+}
+
+.btn-clear:active {
+    transform: scale(0.95);
+}
+
+.p5-hand-info {
+    text-align: center;
+    min-height: 60px;
+    padding: 8px 0;
+}
+
+.p5-hand-desc {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.p5-best-hand-desc {
+    font-size: 0.9rem;
+    color: var(--success);
+    font-weight: 500;
+}
+
+#p5-result-message {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+.result.perfect #p5-result-message {
+    color: var(--success);
+}
+
+.result.failed #p5-result-message {
+    color: var(--danger);
+}
+
+.pick5-theme .menu-item.active {
+    background: rgba(255, 107, 107, 0.1);
+}
+
+/* Responsive adjustments for Pick 5 */
+@media (max-width: 360px) {
+    .p5-cards {
+        gap: 6px;
+    }
+    
+    .p5-cards .card {
+        width: 42px;
+        height: 58px;
+    }
+    
+    .p5-actions {
+        gap: 8px;
+    }
+    
+    .btn-clear {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .p5-cards .card {
+        width: 60px;
+        height: 82px;
+    }
+    
+    .p5-cards {
+        gap: 12px;
+    }
+}
+
+/* Responsive adjustments for Name That Hand */
+@media (max-width: 360px) {
+    .nh-choices {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .nh-choice {
+        padding: 10px 6px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .nh-choice {
+        padding: 14px 12px;
+        font-size: 0.95rem;
+    }
+}
+
+/* ==================== FIND THE NUTS MODE STYLES ==================== */
+
+/* Find Nuts Mode Color Theme - Gold/Orange */
+.findnuts-theme {
+    --bg-color: #2e2a1a;
+    --accent: #ffd700;
+    --success: #4ecca3;
+    --hand-bg: #3e351e;
+    --hand-selected: #605020;
+    --hand-correct: #1b4332;
+}
+
+.fn-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.fn-setting-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.fn-size-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.fn-size-btn {
+    padding: 8px 12px;
+    border: 2px solid var(--hand-bg);
+    border-radius: 8px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.fn-size-btn:hover {
+    border-color: var(--accent);
+}
+
+.fn-size-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg-color);
+}
+
+.fn-instruction {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.fn-instruction p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.fn-instruction strong {
+    color: var(--accent);
+}
+
+.fn-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    margin-top: 2px;
+}
+
+.fn-counter {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.fn-grid-container {
+    padding: 8px 0;
+}
+
+.fn-card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--hand-bg);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.fn-suit-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.fn-suit-label {
+    display: none;
+}
+
+/* fn-grid-card: same style as .card but scaled down */
+.fn-grid-card {
+    flex: 1;
+    min-width: 26px;
+    height: 36px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 2px solid transparent;
+    user-select: none;
+    color: #ffffff;
+    overflow: hidden;
+    padding: 2px 3px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+/* Suit symbol top-left (mirrors .card .card-corner) */
+.fn-grid-suit {
+    font-size: 0.5rem;
+    line-height: 1;
+    opacity: 0.95;
+}
+
+/* Rank bottom-right (mirrors .card .rank) */
+.fn-grid-rank {
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-size: 1.4rem;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* 4-Color Deck for Find Nuts grid cards - colored backgrounds */
+.fn-grid-card.hearts {
+    background: linear-gradient(145deg, #c0392b, #922b21);
+}
+
+.fn-grid-card.diamonds {
+    background: linear-gradient(145deg, #2471a3, #1a5276);
+}
+
+.fn-grid-card.spades {
+    background: linear-gradient(145deg, #2c3e50, #1a252f);
+}
+
+.fn-grid-card.clubs {
+    background: linear-gradient(145deg, #1e8449, #145a32);
+}
+
+.fn-grid-card:hover:not(.disabled) {
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+.fn-grid-card.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #666;
+}
+
+.fn-grid-card.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+.fn-grid-card.correct {
+    border-color: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.fn-grid-card.wrong {
+    border-color: var(--danger);
+    box-shadow: 0 0 8px var(--danger);
+    opacity: 0.6;
+}
+
+.fn-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.fn-nuts-display {
+    text-align: center;
+    padding: 12px;
+}
+
+.fn-nuts-label {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.fn-nuts-combos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.fn-nut-combo {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.05);
+    padding: 6px;
+    border-radius: 8px;
+}
+
+.fn-nut-combo .card {
+    width: 36px;
+    height: 50px;
+    font-size: 0.9rem;
+}
+
+.fn-nuts-more {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.findnuts-theme .menu-item.active {
+    background: rgba(255, 215, 0, 0.1);
+}
+
+#fn-result-message {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+.result.perfect #fn-result-message {
+    color: var(--success);
+}
+
+.result.failed #fn-result-message {
+    color: var(--danger);
+}
+
+/* Responsive adjustments for Find The Nuts */
+@media (max-width: 360px) {
+    .fn-grid-card {
+        min-width: 20px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+    
+    .fn-suit-label {
+        width: 16px;
+        font-size: 0.95rem;
+    }
+    
+    .fn-size-btn {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .fn-grid-card {
+        min-width: 32px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .fn-card-grid {
+        padding: 16px;
+        gap: 6px;
+    }
+}
+
+/* ==================== READ THE BOARD MODE STYLES ==================== */
+
+/* Read Board Mode Color Theme - Cyan/Blue */
+.readboard-theme {
+    --bg-color: #1a2530;
+    --accent: #00d4ff;
+    --success: #4ecca3;
+    --hand-bg: #1e3545;
+    --hand-selected: #264560;
+    --hand-correct: #1b4332;
+}
+
+.rb-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.rb-setting-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.rb-size-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.rb-size-btn {
+    padding: 8px 12px;
+    border: 2px solid var(--hand-bg);
+    border-radius: 8px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.rb-size-btn:hover {
+    border-color: var(--accent);
+}
+
+.rb-size-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg-color);
+}
+
+.rb-board {
+    margin-bottom: 16px;
+}
+
+.rb-questions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.rb-question {
+    background: var(--hand-bg);
+    border-radius: 10px;
+    padding: 14px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.rb-question.correct {
+    border-color: var(--success);
+    background: var(--hand-correct);
+}
+
+.rb-question.wrong {
+    border-color: var(--danger);
+    background: var(--hand-wrong);
+}
+
+.rb-question-text {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.rb-answer-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.rb-answer-btn {
+    flex: 1;
+    max-width: 100px;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 2px solid var(--text-muted);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.rb-answer-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.rb-answer-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg-color);
+}
+
+.rb-answer-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.rb-answer-btn.correct-answer {
+    border-color: var(--success);
+    background: var(--success);
+    color: var(--bg-color);
+}
+
+.rb-actions {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+}
+
+#rb-result-message {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+.result.perfect #rb-result-message {
+    color: var(--success);
+}
+
+.result.failed #rb-result-message {
+    color: var(--danger);
+}
+
+.readboard-theme .menu-item.active {
+    background: rgba(0, 212, 255, 0.1);
+}
+
+/* Responsive adjustments for Read the Board */
+@media (max-width: 360px) {
+    .rb-question {
+        padding: 10px;
+    }
+    
+    .rb-question-text {
+        font-size: 0.85rem;
+    }
+    
+    .rb-answer-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .rb-size-btn {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .rb-question {
+        padding: 18px;
+    }
+    
+    .rb-question-text {
+        font-size: 1.05rem;
+    }
+    
+    .rb-answer-btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+        max-width: 120px;
+    }
+}
+
+/* ==================== HAND STRENGTH MODE STYLES ==================== */
+
+/* Hand Strength Mode Color Theme - Purple/Violet */
+.handstrength-theme {
+    --bg-color: #1e1a2e;
+    --accent: #b388ff;
+    --success: #4ecca3;
+    --hand-bg: #2a2540;
+    --hand-selected: #3d3560;
+    --hand-correct: #1b4332;
+}
+
+.hs-board {
+    margin-bottom: 12px;
+}
+
+.hs-hero-section {
+    background: var(--hand-bg);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.hs-hero-section h3 {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.hs-hero-section .cards {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.hs-hero-desc {
+    font-size: 0.95rem;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.hs-question {
+    text-align: center;
+    padding: 8px 0 16px;
+}
+
+.hs-question p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.hs-question strong {
+    color: var(--accent);
+}
+
+.hs-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 0 0 12px;
+}
+
+.hs-option {
+    padding: 16px 12px;
+    border: 2px solid var(--hand-bg);
+    border-radius: 10px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.hs-option:hover {
+    border-color: var(--accent);
+}
+
+.hs-option:active {
+    transform: scale(0.95);
+}
+
+.hs-option.selected {
+    border-color: var(--accent);
+    background: var(--hand-selected);
+}
+
+.hs-option.correct {
+    border-color: var(--success);
+    background: var(--hand-correct);
+}
+
+.hs-option.wrong {
+    border-color: var(--danger);
+    background: var(--hand-wrong);
+}
+
+.hs-option:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.hs-count {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.hs-pct {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.hs-explanation {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.hs-explanation-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    padding: 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+}
+
+.hs-explanation-text strong {
+    color: var(--accent);
+}
+
+.hs-beating-list {
+    margin-top: 16px;
+    text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.hs-beating-header {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.hs-beating-group {
+    margin-bottom: 12px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.hs-beating-desc {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 6px;
+}
+
+.hs-beating-count {
+    font-weight: normal;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.hs-beating-combos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.hs-combo {
+    display: inline-flex;
+    background: var(--card-bg);
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    gap: 1px;
+}
+
+/* 4-Color Deck for Hand Strength combos */
+.hs-combo .hearts {
+    color: #e63946;  /* Red */
+}
+
+.hs-combo .diamonds {
+    color: #2196f3;  /* Blue */
+}
+
+.hs-combo .spades {
+    color: #1d3557;  /* Black */
+}
+
+.hs-combo .clubs {
+    color: #2e7d32;  /* Green */
+}
+
+/* Legacy support */
+.hs-combo .red {
+    color: #e63946;
+}
+
+.hs-combo .black {
+    color: #1d3557;
+}
+
+.hs-combo-more {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 3px 6px;
+}
+
+.hs-no-beats {
+    font-size: 1.1rem;
+    color: var(--success);
+    text-align: center;
+    padding: 16px;
+    margin-top: 12px;
+}
+
+#hs-result-message {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+.result.perfect #hs-result-message {
+    color: var(--success);
+}
+
+.result.failed #hs-result-message {
+    color: var(--danger);
+}
+
+/* ===================== HOME SCREEN ===================== */
+
+#home-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: 2rem;
+}
+
+#home-mode header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 1rem 0.5rem;
+}
+
+.home-welcome {
+    text-align: center;
+    padding: 0.25rem 1.5rem 0.75rem;
+}
+
+.home-tagline {
+    color: var(--text-secondary, #aaa);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.home-group {
+    margin: 0.75rem 1rem 0;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 0.85rem 1rem 0.75rem;
+    border: 1px solid rgba(255,255,255,0.07);
+}
+
+.home-group-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent, #4ecca3);
+    margin-bottom: 0.3rem;
+}
+
+.home-group-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #aaa);
+    margin: 0 0 0.65rem;
+    line-height: 1.4;
+}
+
+.home-game-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.home-game-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+    color: inherit;
+}
+
+.home-game-btn:active {
+    background: rgba(78, 204, 163, 0.15);
+    transform: scale(0.98);
+}
+
+.home-game-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    line-height: 1.3;
+}
+
+.home-game-hint {
+    font-size: 0.78rem;
+    color: var(--text-secondary, #aaa);
+    margin-top: 0.15rem;
+    line-height: 1.3;
+}
+
+.home-footer {
+    text-align: center;
+    padding: 24px 0 8px;
+}
+
+.home-footer-link {
+    font-size: 0.72rem;
+    color: var(--text-secondary, #666);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.home-footer-link:hover {
+    opacity: 1;
+}
+
+/* ===================== END HOME SCREEN ===================== */
+
+.handstrength-theme .menu-item.active {
+    background: rgba(179, 136, 255, 0.1);
+}
+
+/* Mode Toggle for Quiz/Learning */
+.hs-mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.hs-mode-btn {
+    padding: 10px 20px;
+    border: 2px solid var(--hand-bg);
+    border-radius: 8px;
+    background: var(--hand-bg);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.hs-mode-btn:hover {
+    border-color: var(--accent);
+}
+
+.hs-mode-btn.active {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg-color);
+}
+
+/* Learning Mode Styles */
+.hs-learning-mode {
+    padding: 8px 0;
+}
+
+.hs-learning-instruction {
+    text-align: center;
+    padding: 8px 0 16px;
+}
+
+.hs-learning-instruction p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.hs-learning-instruction strong {
+    color: var(--accent);
+}
+
+.hs-learning-counter {
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.hs-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.hs-category {
+    background: var(--hand-bg);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.hs-category.correct {
+    border-color: var(--success);
+}
+
+.hs-category.wrong {
+    border-color: var(--danger);
+}
+
+.hs-category.partial {
+    border-color: #f0ad4e;
+}
+
+.hs-category-header {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.hs-category-header:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.hs-category-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--text-muted);
+    border-radius: 4px;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    background: transparent;
+}
+
+.hs-category-checkbox.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.hs-category-checkbox.partial {
+    background: rgba(179, 136, 255, 0.3);
+    border-color: var(--accent);
+}
+
+.hs-category-checkbox::after {
+    content: '✓';
+    color: var(--bg-color);
+    font-size: 0.9rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.hs-category-checkbox.checked::after {
+    opacity: 1;
+}
+
+.hs-category-checkbox.partial::after {
+    content: '−';
+    opacity: 1;
+    color: var(--accent);
+}
+
+.hs-category-name {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.hs-category-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-right: 8px;
+}
+
+.hs-category-expand {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.hs-category.expanded .hs-category-expand {
+    transform: rotate(180deg);
+}
+
+.hs-category-subgroups {
+    display: none;
+    padding: 0 12px 12px 46px;
+}
+
+.hs-category.expanded .hs-category-subgroups {
+    display: block;
+}
+
+.hs-subgroup {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+}
+
+.hs-subgroup:first-child {
+    border-top: none;
+}
+
+.hs-subgroup:hover {
+    background: rgba(255,255,255,0.02);
+}
+
+.hs-subgroup-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text-muted);
+    border-radius: 3px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    background: transparent;
+}
+
+.hs-subgroup-checkbox.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.hs-subgroup-checkbox::after {
+    content: '✓';
+    color: var(--bg-color);
+    font-size: 0.7rem;
+    font-weight: bold;
+    opacity: 0;
+}
+
+.hs-subgroup-checkbox.checked::after {
+    opacity: 1;
+}
+
+.hs-subgroup-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.hs-subgroup-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.hs-subgroup.hero-hand {
+    background: rgba(179, 136, 255, 0.1);
+    border-radius: 4px;
+    margin: 4px 0;
+    padding: 8px;
+}
+
+.hs-subgroup.hero-hand .hs-subgroup-name {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+/* Hands that lose to hero - grayed out */
+.hs-subgroup.loses-to-hero {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.hs-subgroup.loses-to-hero:hover {
+    background: transparent;
+}
+
+.hs-subgroup.loses-to-hero .hs-subgroup-checkbox {
+    border-color: rgba(136, 136, 136, 0.3);
+    cursor: not-allowed;
+}
+
+.hs-subgroup.loses-to-hero .hs-subgroup-name {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.hs-subgroup.loses-to-hero .hs-subgroup-count {
+    opacity: 0.4;
+}
+
+/* ==================== 3-LEVEL HIERARCHY STYLES ==================== */
+
+/* Level 1 - Category (e.g., Three of a Kind) */
+.hs-level1 {
+    background: var(--hand-bg);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    overflow: hidden;
+}
+
+.hs-level1.correct {
+    border: 2px solid var(--success);
+}
+
+.hs-level1.wrong {
+    border: 2px solid var(--danger);
+}
+
+.hs-l1-header {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.hs-l1-header:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* L1 Checkbox */
+.hs-l1-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--text-muted);
+    border-radius: 4px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    background: transparent;
+    cursor: pointer;
+}
+
+.hs-l1-checkbox:hover {
+    border-color: var(--accent);
+}
+
+.hs-l1-checkbox.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.hs-l1-checkbox.partial {
+    background: rgba(179, 136, 255, 0.3);
+    border-color: var(--accent);
+}
+
+.hs-l1-checkbox::after {
+    content: '✓';
+    color: var(--bg-color);
+    font-size: 0.85rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.hs-l1-checkbox.checked::after {
+    opacity: 1;
+}
+
+.hs-l1-checkbox.partial::after {
+    content: '−';
+    opacity: 1;
+    color: var(--accent);
+}
+
+.hs-l1-spacer {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.hs-expand {
+    width: 20px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.hs-l1-name {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.hs-l1-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.hs-l1-count.has-beating {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.hs-l2-container {
+    display: none;
+    padding-left: 12px;
+    padding-bottom: 8px;
+}
+
+.hs-level1.expanded .hs-l2-container {
+    display: block;
+}
+
+/* Level 2 - Specific Rank (e.g., Trip Aces) */
+.hs-level2 {
+    margin: 4px 0;
+}
+
+.hs-l2-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.hs-l2-header:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* L2 Checkbox */
+.hs-l2-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text-muted);
+    border-radius: 3px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    background: transparent;
+    cursor: pointer;
+}
+
+.hs-l2-checkbox:hover {
+    border-color: var(--accent);
+}
+
+.hs-l2-checkbox.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.hs-l2-checkbox.partial {
+    background: rgba(179, 136, 255, 0.3);
+    border-color: var(--accent);
+}
+
+.hs-l2-checkbox::after {
+    content: '✓';
+    color: var(--bg-color);
+    font-size: 0.7rem;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.hs-l2-checkbox.checked::after {
+    opacity: 1;
+}
+
+.hs-l2-checkbox.partial::after {
+    content: '−';
+    opacity: 1;
+    color: var(--accent);
+}
+
+.hs-l2-spacer {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.hs-l3-spacer {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.hs-l2-name {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.hs-l2-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.hs-l2-count.has-beating {
+    color: var(--accent);
+}
+
+.hs-l3-container {
+    display: none;
+    padding-left: 20px;
+    padding-bottom: 4px;
+}
+
+.hs-level2.expanded .hs-l3-container {
+    display: block;
+}
+
+/* L3 correct/wrong markers */
+.hs-level3.correct {
+    background: rgba(78, 204, 163, 0.2);
+    border: 1px solid var(--success);
+}
+
+.hs-level3.wrong {
+    background: rgba(255, 107, 107, 0.2);
+    border: 1px solid var(--danger);
+}
+
+/* Level 3 - Tie Groups (e.g., K kicker) */
+.hs-level3 {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    margin: 2px 0;
+}
+
+.hs-level3:hover:not(.loses-to-hero):not(.hero-marker) {
+    background: rgba(255,255,255,0.05);
+}
+
+.hs-l3-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--text-muted);
+    border-radius: 3px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hs-l3-checkbox.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.hs-l3-checkbox.checked::after {
+    content: '✓';
+    color: var(--bg-color);
+    font-size: 0.65rem;
+    font-weight: bold;
+}
+
+.hs-l3-name {
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.hs-l3-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Level 3 - loses to hero (grayed out) */
+.hs-level3.loses-to-hero {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.hs-level3.loses-to-hero .hs-l3-name {
+    color: var(--text-muted);
+}
+
+/* Hero marker */
+.hs-level3.hero-marker {
+    background: rgba(179, 136, 255, 0.15);
+    border: 1px solid var(--accent);
+    cursor: default;
+}
+
+.hs-hero-label {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.hs-learning-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 0;
+}
+
+/* Responsive adjustments for Hand Strength */
+@media (max-width: 360px) {
+    .hs-option {
+        padding: 12px 8px;
+    }
+    
+    .hs-count {
+        font-size: 1.2rem;
+    }
+    
+    .hs-pct {
+        font-size: 0.7rem;
+    }
+    
+    .hs-mode-btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .hs-category-header {
+        padding: 10px;
+    }
+    
+    .hs-category-name {
+        font-size: 0.85rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hs-option {
+        padding: 20px 16px;
+    }
+    
+    .hs-count {
+        font-size: 1.6rem;
+    }
+    
+    .hs-options {
+        gap: 14px;
+    }
+    
+    .hs-categories {
+        max-height: 500px;
+    }
+}
+
+/* Hidden utility */
+.hidden {
+    display: none !important;
+}
