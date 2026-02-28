@@ -188,7 +188,7 @@ header h1 {
 /* Cards */
 .card {
     width: 52px;
-    height: 72px;
+    aspect-ratio: 5 / 7;
     border-radius: 7px;
     display: flex;
     flex-direction: column;
@@ -201,6 +201,8 @@ header h1 {
     color: #ffffff;
     border: 1px solid rgba(0,0,0,0.4);
     padding: 4px 5px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 /* Suit symbol in top-left corner */
@@ -341,7 +343,6 @@ header h1 {
 
 .hand .card {
     width: 52px;
-    height: 72px;
 }
 
 .hand .order-badge {
@@ -475,7 +476,6 @@ header h1 {
 
 .rankings .card {
     width: 28px;
-    height: 38px;
     padding: 2px 3px;
 }
 
@@ -687,12 +687,10 @@ header h1 {
 @media (max-width: 360px) {
     .card {
         width: 40px;
-        height: 56px;
     }
     
     .hand .card {
         width: 38px;
-        height: 52px;
     }
     
     .board .cards {
@@ -721,13 +719,11 @@ header h1 {
     
     .card {
         width: 56px;
-        height: 76px;
         font-size: 1.4rem;
     }
     
     .hand .card {
         width: 50px;
-        height: 68px;
     }
     
     .hands {
@@ -1153,7 +1149,6 @@ header h1 {
     
     .p5-cards .card {
         width: 42px;
-        height: 58px;
     }
     
     .p5-actions {
@@ -1169,7 +1164,6 @@ header h1 {
 @media (min-width: 1024px) {
     .p5-cards .card {
         width: 60px;
-        height: 82px;
     }
     
     .p5-cards {
@@ -1421,7 +1415,6 @@ header h1 {
 
 .fn-nut-combo .card {
     width: 36px;
-    height: 50px;
     font-size: 0.9rem;
 }
 
