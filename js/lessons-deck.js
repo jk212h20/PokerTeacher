@@ -21,19 +21,19 @@ const MODULE_DECK = {
           </div>
           <div class="suits-grid">
             <div class="suit-card">
-              <div class="suit-symbol-big" style="color:#1a1a1a">♠</div>
+              <div class="suit-symbol-big" style="color:#2c3e50">♠</div>
               <div class="suit-name">${es ? 'Picas' : 'Spades'}</div>
             </div>
             <div class="suit-card">
-              <div class="suit-symbol-big" style="color:#d32f2f">♥</div>
+              <div class="suit-symbol-big" style="color:#c0392b">♥</div>
               <div class="suit-name">${es ? 'Corazones' : 'Hearts'}</div>
             </div>
             <div class="suit-card">
-              <div class="suit-symbol-big" style="color:#d32f2f">♦</div>
+              <div class="suit-symbol-big" style="color:#2471a3">♦</div>
               <div class="suit-name">${es ? 'Diamantes' : 'Diamonds'}</div>
             </div>
             <div class="suit-card">
-              <div class="suit-symbol-big" style="color:#1a1a1a">♣</div>
+              <div class="suit-symbol-big" style="color:#1e8449">♣</div>
               <div class="suit-name">${es ? 'Tréboles' : 'Clubs'}</div>
             </div>
           </div>
@@ -115,8 +115,8 @@ const MODULE_DECK = {
               const suitMap = {s:'♠',h:'♥',d:'♦',c:'♣'};
               const suit = suitMap[c[c.length-1]];
               const rank = c.slice(0,-1).toUpperCase();
-              const isRed = ['♥','♦'].includes(suit);
-              return `<div class="card size-md black">
+              const sc = {'♥':'suit-hearts','♦':'suit-diamonds','♣':'suit-clubs','♠':'suit-spades'}[suit]||'suit-spades';
+              return `<div class="card size-md ${sc}">
                 <div class="card-corner top-left"><span class="card-rank">${rank}</span><span class="card-suit-small">${suit}</span></div>
                 <div class="card-center">${suit}</div>
                 <div class="card-corner bottom-right"><span class="card-rank">${rank}</span><span class="card-suit-small">${suit}</span></div>
@@ -126,8 +126,8 @@ const MODULE_DECK = {
           <div class="section-divider">${es ? 'Escalera más BAJA' : 'LOWEST Straight'}</div>
           <div class="card-row">
             ${[['A','♠'],['2','♥'],['3','♦'],['4','♣'],['5','♠']].map(([rank, suit]) => {
-              const isRed = ['♥','♦'].includes(suit);
-              return `<div class="card size-md ${isRed?'red':'black'}">
+              const sc = {'♥':'suit-hearts','♦':'suit-diamonds','♣':'suit-clubs','♠':'suit-spades'}[suit]||'suit-spades';
+              return `<div class="card size-md ${sc}">
                 <div class="card-corner top-left"><span class="card-rank">${rank}</span><span class="card-suit-small">${suit}</span></div>
                 <div class="card-center">${suit}</div>
                 <div class="card-corner bottom-right"><span class="card-rank">${rank}</span><span class="card-suit-small">${suit}</span></div>

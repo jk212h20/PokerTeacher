@@ -69,8 +69,8 @@ function createCardElement(card) {
     const el = document.createElement('div');
     el.className = `card ${card.suit}`;
     el.innerHTML = `
+        <span class="card-corner">${card.symbol}</span>
         <span class="rank">${card.display}</span>
-        <span class="suit">${card.symbol}</span>
     `;
     return el;
 }

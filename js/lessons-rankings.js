@@ -3,8 +3,8 @@
    ============================================ */
 
 function cardHtml(rank, suit, size='md') {
-  const isRed = ['♥','♦'].includes(suit);
-  return `<div class="card size-${size} ${isRed?'red':'black'}">
+  const suitClass = {'♥':'suit-hearts','♦':'suit-diamonds','♣':'suit-clubs','♠':'suit-spades'}[suit]||'suit-spades';
+  return `<div class="card size-${size} ${suitClass}">
     <div class="card-corner top-left"><span class="card-rank">${rank}</span><span class="card-suit-small">${suit}</span></div>
     <div class="card-center">${suit}</div>
     <div class="card-corner bottom-right"><span class="card-rank">${rank}</span><span class="card-suit-small">${suit}</span></div>

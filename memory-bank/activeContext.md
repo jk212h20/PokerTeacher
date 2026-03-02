@@ -1,9 +1,10 @@
 # Active Context — PokerTeacher
 
-## Current State (2026-02-28)
+## Current State (2026-03-02)
 Checkpoint 2 complete and working. Module 5 (Starting Hands) added — 6 lessons, 3 quizzes, full interactive components. Total: 31 lessons across 5 modules.
 
 Recent changes:
+- **Fixed practice card rendering (2026-03-02):** Cards were showing centered suit-only (no rank). Fixed `practice/js/cards.js` `createCardElement()` to use `.card-corner` + `.rank` classes matching the card-design reference. Replaced CSS `container-type: inline-size` / `cqi` units in `practice/css/styles.css` with fixed `rem`/`px` values (matching `practice/card-design/cards.css`). Cards now show: small suit upper-left, large rank bottom-right.
 - Progress bar hidden on welcome/home screen (shown only during lessons/quizzes)
 - Four-color deck implemented on lesson side: ♥ red, ♦ blue, ♣ green, ♠ black
 - Practice drills (AnnaPoker) merged into `/practice/` subdirectory
