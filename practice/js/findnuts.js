@@ -733,7 +733,7 @@ function renderCardGrid() {
             
             const cardEl = document.createElement('div');
             cardEl.className = `fn-grid-card ${suit}`;
-            cardEl.textContent = RANK_DISPLAY[rank];
+            cardEl.innerHTML = `<span class="fn-grid-suit">${SUIT_SYMBOLS[suit]}</span><span class="fn-grid-rank">${RANK_DISPLAY[rank]}</span>`;
             cardEl.dataset.cardString = cardStr;
             
             if (boardCardStrings.has(cardStr)) {
