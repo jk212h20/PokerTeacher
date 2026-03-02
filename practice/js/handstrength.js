@@ -565,12 +565,12 @@ function selectHsOption(option, element) {
     if (option.isCorrect) {
         hsCorrectCount2++;
         hsStreak++;
-        hsResultMessageEl.textContent = '✓ Correct!';
+        hsResultMessageEl.textContent = pt('hs.correct');
         hsResultEl.className = 'result perfect';
     } else {
         hsStreak = 0;
         element.classList.add('wrong');
-        hsResultMessageEl.textContent = `✗ ${hsCorrectCount} hands beat you`;
+        hsResultMessageEl.textContent = pt('hs.wrong', hsCorrectCount);
         hsResultEl.className = 'result failed';
     }
     
@@ -578,15 +578,14 @@ function selectHsOption(option, element) {
     const pct = ((hsCorrectCount / hsTotalCombos) * 100).toFixed(1);
     let explanationHtml = `
         <div class="hs-explanation-text">
-            Out of <strong>${hsTotalCombos}</strong> possible opponent hands,<br>
-            <strong>${hsCorrectCount}</strong> (${pct}%) beat your hand.
+            ${pt('hs.explanationText', hsTotalCombos, hsCorrectCount, pct)}
         </div>
     `;
     
     // Show the beating hands list (strongest to weakest)
     if (hsBeatingHands.length > 0) {
         explanationHtml += '<div class="hs-beating-list">';
-        explanationHtml += '<div class="hs-beating-header">Hands that beat you (strongest → weakest):</div>';
+        explanationHtml += `<div class="hs-beating-header">${pt('hs.beatingHeader')}</div>`;
         
         // Group by hand description to show counts
         const grouped = {};
@@ -601,7 +600,7 @@ function selectHsOption(option, element) {
         for (const desc of Object.keys(grouped)) {
             const hands = grouped[desc];
             explanationHtml += `<div class="hs-beating-group">`;
-            explanationHtml += `<div class="hs-beating-desc">${desc} <span class="hs-beating-count">(${hands.length} combo${hands.length > 1 ? 's' : ''})</span></div>`;
+            explanationHtml += `<div class="hs-beating-desc">${desc} <span class="hs-beating-count">(${hands.length} ${hands.length > 1 ? pt('hs.combos') : pt('hs.combo')})</span></div>`;
             explanationHtml += `<div class="hs-beating-combos">`;
             
             // Show up to 8 combos per group, then indicate more
@@ -615,14 +614,14 @@ function selectHsOption(option, element) {
                 explanationHtml += `<span class="hs-combo"><span class="${color1}">${c1.display}${c1.symbol}</span><span class="${color2}">${c2.display}${c2.symbol}</span></span>`;
             }
             if (hands.length > showMax) {
-                explanationHtml += `<span class="hs-combo-more">+${hands.length - showMax} more</span>`;
+                explanationHtml += `<span class="hs-combo-more">${pt('hs.moreCombos', hands.length - showMax)}</span>`;
             }
             explanationHtml += `</div></div>`;
         }
         
         explanationHtml += '</div>';
     } else {
-        explanationHtml += '<div class="hs-no-beats">🎉 You have the nuts! No hand beats you.</div>';
+        explanationHtml += `<div class="hs-no-beats">${pt('hs.noBeats')}</div>`;
     }
     
     hsExplanationEl.innerHTML = explanationHtml;

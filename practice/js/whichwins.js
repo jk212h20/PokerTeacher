@@ -1268,7 +1268,7 @@ function makeChoice(choice) {
         wwCorrectCount++;
         wwStreak++;
         selectedBtn.classList.add('correct');
-        wwResultMessageEl.textContent = '✓ Correct!';
+        wwResultMessageEl.textContent = pt('ww.correct');
         wwResultEl.className = 'result perfect';
     } else {
         wwStreak = 0;
@@ -1279,8 +1279,11 @@ function makeChoice(choice) {
                           wwCorrectAnswer === '2' ? wwChoice2Btn : wwChoiceTieBtn;
         correctBtn.classList.add('correct');
         
-        const answerText = wwCorrectAnswer === 'tie' ? 'Tie' : `Hand ${wwCorrectAnswer}`;
-        wwResultMessageEl.textContent = `✗ Answer: ${answerText}`;
+        if (wwCorrectAnswer === 'tie') {
+            wwResultMessageEl.textContent = pt('ww.answerTie');
+        } else {
+            wwResultMessageEl.textContent = `${pt('ww.answerHand')} ${wwCorrectAnswer}`;
+        }
         wwResultEl.className = 'result failed';
     }
     

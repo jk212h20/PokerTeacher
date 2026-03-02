@@ -322,41 +322,63 @@ function rankHands(board, handsArray) {
     return evaluated;
 }
 
-// Get a readable description of the hand
+// Get a readable description of the hand (i18n-aware)
 function getHandDescription(hand) {
-    const rankName = HAND_NAMES[hand.rank];
-    
+    // Use pt() if available (practice i18n), otherwise fall back to English
+    const _t = (typeof pt === 'function') ? pt : (k, ...a) => {
+        let s = k; a.forEach((v,i) => s = s.replace(`{${i}}`, v)); return s;
+    };
+    const rn = (v) => getRankName(v);
+
     switch (hand.rank) {
         case HAND_RANKS.ROYAL_FLUSH:
-            return 'Royal Flush';
+            return _t('desc.royalFlush');
         case HAND_RANKS.STRAIGHT_FLUSH:
-            return `${getRankName(hand.values[0])}-high Straight Flush`;
+            if (hand.values[0] === 5) return _t('desc.steelWheel');
+            return _t('desc.straightFlush', rn(hand.values[0]));
         case HAND_RANKS.FOUR_OF_A_KIND:
-            return `Quad ${getRankName(hand.values[0])}s`;
+            return _t('desc.quads', rn(hand.values[0]));
         case HAND_RANKS.FULL_HOUSE:
-            return `${getRankName(hand.values[0])}s full of ${getRankName(hand.values[1])}s`;
+            return _t('desc.fullHouse', rn(hand.values[0]), rn(hand.values[1]));
         case HAND_RANKS.FLUSH:
-            return `${getRankName(hand.values[0])}-high Flush`;
+            return _t('desc.flush', rn(hand.values[0]));
         case HAND_RANKS.STRAIGHT:
-            return `${getRankName(hand.values[0])}-high Straight`;
+            if (hand.values[0] === 5) return _t('desc.wheel');
+            return _t('desc.straight', rn(hand.values[0]));
         case HAND_RANKS.THREE_OF_A_KIND:
-            return `Trip ${getRankName(hand.values[0])}s`;
+            return _t('desc.trips', rn(hand.values[0]));
         case HAND_RANKS.TWO_PAIR:
-            return `${getRankName(hand.values[0])}s and ${getRankName(hand.values[1])}s`;
+            return _t('desc.twoPair', rn(hand.values[0]), rn(hand.values[1]));
         case HAND_RANKS.PAIR:
-            return `Pair of ${getRankName(hand.values[0])}s`;
+            return _t('desc.pair', rn(hand.values[0]));
         case HAND_RANKS.HIGH_CARD:
-            return `${getRankName(hand.values[0])} High`;
+            return _t('desc.highCard', rn(hand.values[0]));
         default:
-            return rankName;
+            return HAND_NAMES[hand.rank];
     }
 }
 
 function getRankName(value) {
+    // Use pt() if available (practice i18n)
+    if (typeof pt === 'function') {
+        return pt('rank.' + value);
+    }
     const names = {
         14: 'Ace', 13: 'King', 12: 'Queen', 11: 'Jack', 10: 'Ten',
         9: 'Nine', 8: 'Eight', 7: 'Seven', 6: 'Six', 5: 'Five',
         4: 'Four', 3: 'Three', 2: 'Two'
     };
     return names[value] || value;
+}
+
+/** Get translated hand name by rank number (i18n-aware) */
+function getHandName(rank) {
+    if (typeof pt !== 'function') return HAND_NAMES[rank] || '';
+    const keys = {
+        1: 'hand.highCard', 2: 'hand.pair', 3: 'hand.twoPair',
+        4: 'hand.threeOfAKind', 5: 'hand.straight', 6: 'hand.flush',
+        7: 'hand.fullHouse', 8: 'hand.fourOfAKind', 9: 'hand.straightFlush',
+        10: 'hand.royalFlush'
+    };
+    return pt(keys[rank] || '');
 }

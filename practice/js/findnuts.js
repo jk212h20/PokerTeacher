@@ -834,7 +834,7 @@ function checkFindNutsAnswer() {
     if (isCorrect) {
         fnCorrectCount++;
         fnStreak++;
-        fnResultMessageEl.textContent = '✓ You found the nuts!';
+        fnResultMessageEl.textContent = pt('fn.foundNuts');
         fnResultEl.className = 'result perfect';
         
         // Mark as correct
@@ -845,7 +845,7 @@ function checkFindNutsAnswer() {
         });
     } else {
         fnStreak = 0;
-        fnResultMessageEl.textContent = '✗ Not the nuts';
+        fnResultMessageEl.textContent = pt('fn.notNuts');
         fnResultEl.className = 'result failed';
         
         // Mark as wrong
@@ -870,7 +870,7 @@ function showNutHands(nutHand) {
     
     const label = document.createElement('div');
     label.className = 'fn-nuts-label';
-    label.textContent = `The Nuts: ${getHandDescription(nutHand)}`;
+    label.textContent = `${pt('fn.theNuts')}: ${getHandDescription(nutHand)}`;
     fnNutsDisplayEl.appendChild(label);
     
     const combosContainer = document.createElement('div');
@@ -893,7 +893,7 @@ function showNutHands(nutHand) {
     if (fnNutHands.length > 6) {
         const moreEl = document.createElement('div');
         moreEl.className = 'fn-nuts-more';
-        moreEl.textContent = `+${fnNutHands.length - 6} more`;
+        moreEl.textContent = `+${fnNutHands.length - 6} ${pt('fn.more')}`;
         combosContainer.appendChild(moreEl);
     }
     

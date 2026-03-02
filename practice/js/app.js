@@ -252,7 +252,7 @@ function renderHands() {
         // Player label
         const playerEl = document.createElement('div');
         playerEl.className = 'player';
-        playerEl.textContent = `Hand ${i + 1}`;
+        playerEl.textContent = `${pt('common.hand')} ${i + 1}`;
         handEl.appendChild(playerEl);
         
         // Hole cards container
@@ -367,11 +367,11 @@ function endRound() {
     if (isCorrect) {
         correctCount++;
         streak++;
-        resultMessageEl.textContent = '✓ Perfect!';
+        resultMessageEl.textContent = pt('ranking.perfect');
         resultEl.className = 'result perfect';
     } else {
         streak = 0;
-        resultMessageEl.textContent = '✗ Not quite';
+        resultMessageEl.textContent = pt('ranking.notQuite');
         resultEl.className = 'result failed';
         showCorrectOrder();
     }

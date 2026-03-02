@@ -395,7 +395,7 @@ function renderQuestions() {
         
         const textEl = document.createElement('div');
         textEl.className = 'rb-question-text';
-        textEl.textContent = `Q${index + 1}: ${q.text}`;
+        textEl.textContent = `Q${index + 1}: ${pt('rb.q.' + q.id)}`;
         questionEl.appendChild(textEl);
         
         const buttonsEl = document.createElement('div');
@@ -404,14 +404,14 @@ function renderQuestions() {
         const yesBtn = document.createElement('button');
         yesBtn.className = 'rb-answer-btn';
         yesBtn.dataset.answer = 'yes';
-        yesBtn.textContent = 'YES';
+        yesBtn.textContent = pt('common.yes');
         yesBtn.addEventListener('click', () => selectAnswer(q.id, true, questionEl));
         buttonsEl.appendChild(yesBtn);
         
         const noBtn = document.createElement('button');
         noBtn.className = 'rb-answer-btn';
         noBtn.dataset.answer = 'no';
-        noBtn.textContent = 'NO';
+        noBtn.textContent = pt('common.no');
         noBtn.addEventListener('click', () => selectAnswer(q.id, false, questionEl));
         buttonsEl.appendChild(noBtn);
         
@@ -480,11 +480,11 @@ function checkReadBoardAnswers() {
     if (correctAnswers === 3) {
         rbCorrectCount++;
         rbStreak++;
-        rbResultMessageEl.textContent = '✓ Perfect! 3/3';
+        rbResultMessageEl.textContent = pt('rb.perfect');
         rbResultEl.className = 'result perfect';
     } else {
         rbStreak = 0;
-        rbResultMessageEl.textContent = `✗ ${correctAnswers}/3 correct`;
+        rbResultMessageEl.textContent = pt('rb.score', correctAnswers);
         rbResultEl.className = 'result failed';
     }
     

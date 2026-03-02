@@ -303,7 +303,7 @@ function createChoiceButtons() {
         const btn = document.createElement('button');
         btn.className = 'nh-choice';
         btn.dataset.rank = option.rank;
-        btn.textContent = option.name;
+        btn.textContent = getHandName(option.rank) || option.name;
         btn.addEventListener('click', () => makeNhChoice(option.rank));
         nhChoicesEl.appendChild(btn);
     }
@@ -406,7 +406,7 @@ function makeNhChoice(chosenRank) {
         nhCorrectCount++;
         nhStreak++;
         selectedBtn.classList.add('correct');
-        nhResultMessageEl.textContent = '✓ Correct!';
+        nhResultMessageEl.textContent = pt('nh.correct');
         nhResultEl.className = 'result perfect';
     } else {
         nhStreak = 0;
@@ -416,8 +416,8 @@ function makeNhChoice(chosenRank) {
         const correctBtn = nhChoicesEl.querySelector(`[data-rank="${nhCorrectAnswer}"]`);
         correctBtn.classList.add('correct');
         
-        const correctName = HAND_OPTIONS.find(o => o.rank === nhCorrectAnswer).name;
-        nhResultMessageEl.textContent = `✗ It's ${correctName}`;
+        const correctName = getHandName(nhCorrectAnswer) || HAND_OPTIONS.find(o => o.rank === nhCorrectAnswer).name;
+        nhResultMessageEl.textContent = pt('nh.itsA', correctName);
         nhResultEl.className = 'result failed';
     }
     

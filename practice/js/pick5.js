@@ -166,7 +166,7 @@ function checkPick5Selection() {
     const isOptimal = isOptimalSelection(p5SelectedCards, p5Cards);
     
     // Show user's hand
-    p5HandDescEl.textContent = `Your hand: ${getHandDescription(userHand)}`;
+    p5HandDescEl.textContent = `${pt('p5.yourHand')}: ${getHandDescription(userHand)}`;
     
     // Disable card clicking
     const cardEls = p5CardsEl.querySelectorAll('.p5-card');
@@ -177,7 +177,7 @@ function checkPick5Selection() {
     if (isOptimal) {
         p5CorrectCount++;
         p5Streak++;
-        p5ResultMessageEl.textContent = '✓ Perfect!';
+        p5ResultMessageEl.textContent = pt('p5.perfect');
         p5ResultEl.className = 'result perfect';
         
         // Mark selected as correct
@@ -188,7 +188,7 @@ function checkPick5Selection() {
         });
     } else {
         p5Streak = 0;
-        p5ResultMessageEl.textContent = '✗ Not the best hand';
+        p5ResultMessageEl.textContent = pt('p5.notBest');
         p5ResultEl.className = 'result failed';
         
         // Mark selected as wrong
@@ -207,7 +207,7 @@ function checkPick5Selection() {
         });
         
         // Show best hand
-        p5BestHandDescEl.textContent = `Best hand: ${getHandDescription(p5BestHand.hand)}`;
+        p5BestHandDescEl.textContent = `${pt('p5.bestHand')}: ${getHandDescription(p5BestHand.hand)}`;
     }
     
     // Update stats

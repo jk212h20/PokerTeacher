@@ -4,6 +4,7 @@
 Checkpoint 2 complete and working. Module 5 (Starting Hands) added — 6 lessons, 3 quizzes, full interactive components. Total: 31 lessons across 5 modules.
 
 Recent changes:
+- **Practice modes i18n (2026-03-02):** Added full English/Spanish translation infrastructure to all 8 practice modes. Created `practice/js/i18n.js` with `pt()` function, `pSetLang()`, `pApplyTranslations()`, and `data-pt` attribute support. Updated all game mode JS files (whichwins, outs, namehand, pick5, findnuts, readboard, handstrength, app/ranking) to use `pt()` for all user-facing strings. Translated hand names, descriptions, rank names, 23 board-reading questions, combo counting UI, and all result messages. Language toggle button added to practice header (shares `pt_lang` localStorage key with lesson side).
 - **Fixed practice card rendering (2026-03-02):** Cards were showing centered suit-only (no rank). Fixed `practice/js/cards.js` `createCardElement()` to use `.card-corner` + `.rank` classes matching the card-design reference. Replaced CSS `container-type: inline-size` / `cqi` units in `practice/css/styles.css` with fixed `rem`/`px` values (matching `practice/card-design/cards.css`). Cards now show: small suit upper-left, large rank bottom-right.
 - Progress bar hidden on welcome/home screen (shown only during lessons/quizzes)
 - Four-color deck implemented on lesson side: ♥ red, ♦ blue, ♣ green, ♠ black

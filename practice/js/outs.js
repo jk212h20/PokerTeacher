@@ -240,7 +240,7 @@ function newOutsRound() {
     renderOutsHands();
     
     // Update scenario text
-    scenarioTextEl.textContent = `${currentOutsScenario.category}: How many outs to win?`;
+    scenarioTextEl.textContent = `${currentOutsScenario.category}: ${pt('outs.howMany')}`;
     
     // Focus input
     setTimeout(() => outsInputEl.focus(), 100);
@@ -295,12 +295,12 @@ function checkOutsAnswer() {
     if (correct) {
         outsCorrectCount++;
         outsStreak++;
-        outsResultMessageEl.textContent = '✓ Correct!';
+        outsResultMessageEl.textContent = pt('outs.correct');
         outsResultEl.className = 'result perfect';
         outsInputEl.classList.add('correct');
     } else {
         outsStreak = 0;
-        outsResultMessageEl.textContent = `✗ Answer: ${correctOuts} outs`;
+        outsResultMessageEl.textContent = pt('outs.answer', correctOuts);
         outsResultEl.className = 'result failed';
         outsInputEl.classList.add('wrong');
     }
@@ -320,12 +320,12 @@ function displayOutCards() {
     const outCards = currentOutsScenario.outCards;
     
     if (outCards.length === 0) {
-        outsExplanationEl.innerHTML = '<div class="outs-cards-label">No outs - drawing dead</div>';
+        outsExplanationEl.innerHTML = `<div class="outs-cards-label">${pt('outs.noOuts')}</div>`;
     } else {
         // Sort cards by rank for cleaner display
         const sortedCards = sortByValue([...outCards]);
         
-        let html = '<div class="outs-cards-label">Out cards:</div><div class="outs-cards-display">';
+        let html = `<div class="outs-cards-label">${pt('outs.outCards')}:</div><div class="outs-cards-display">`;
         for (const card of sortedCards) {
             const suitSymbol = SUIT_SYMBOLS[card.suit];
             const isRed = card.suit === 'hearts' || card.suit === 'diamonds';

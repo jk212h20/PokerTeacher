@@ -70,6 +70,26 @@ body {
     margin-bottom: 4px;
 }
 
+.lang-toggle {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 101;
+    letter-spacing: 0.5px;
+}
+.lang-toggle:active {
+    background: rgba(255,255,255,0.25);
+}
+
 .menu-toggle {
     background: transparent;
     border: 1px solid var(--text-muted);
