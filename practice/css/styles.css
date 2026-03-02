@@ -1854,38 +1854,30 @@ header h1 {
 
 .hs-combo {
     display: inline-flex;
-    background: var(--card-bg);
     border-radius: 4px;
-    padding: 3px 6px;
     font-size: 0.85rem;
     font-weight: 600;
-    gap: 1px;
+    gap: 2px;
+    overflow: hidden;
 }
 
-/* 4-Color Deck for Hand Strength combos */
+/* 4-Color Deck for Hand Strength combos — colored bg like board cards */
+.hs-combo span {
+    padding: 3px 5px;
+    color: #fff;
+    border-radius: 3px;
+}
 .hs-combo .hearts {
-    color: #e63946;  /* Red */
+    background: linear-gradient(145deg, #c0392b, #922b21);
 }
-
 .hs-combo .diamonds {
-    color: #2196f3;  /* Blue */
+    background: linear-gradient(145deg, #2471a3, #1a5276);
 }
-
 .hs-combo .spades {
-    color: #1d3557;  /* Black */
+    background: linear-gradient(145deg, #2c3e50, #1a252f);
 }
-
 .hs-combo .clubs {
-    color: #2e7d32;  /* Green */
-}
-
-/* Legacy support */
-.hs-combo .red {
-    color: #e63946;
-}
-
-.hs-combo .black {
-    color: #1d3557;
+    background: linear-gradient(145deg, #1e8449, #145a32);
 }
 
 .hs-combo-more {
@@ -1895,7 +1887,6 @@ header h1 {
     color: var(--text-muted);
     padding: 3px 6px;
 }
-
 .hs-no-beats {
     font-size: 1.1rem;
     color: var(--success);
