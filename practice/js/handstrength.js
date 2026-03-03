@@ -497,6 +497,10 @@ function newHandStrengthRound() {
     // Generate options
     hsOptions = generateOptions(hsCorrectCount, hsTotalCombos);
     
+    // Update question text with actual total
+    const qEl = document.getElementById('hs-question-text');
+    if (qEl) qEl.innerHTML = pt('hs.question', hsTotalCombos);
+    
     // Render
     renderHsBoard();
     renderHsHeroHand();
