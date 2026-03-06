@@ -17,10 +17,29 @@ let rbStreakEl, rbCorrectEl, rbTotalEl;
 let rbBoardSizeBtns;
 
 // ============================================
+// HELPER: format card for explanations
+// ============================================
+// SUIT_SYMBOLS is defined in cards.js (global)
+const RB_SUIT_NAMES_EN = { hearts: 'hearts', diamonds: 'diamonds', spades: 'spades', clubs: 'clubs' };
+const RB_SUIT_NAMES_ES = { hearts: 'corazones', diamonds: 'diamantes', spades: 'picas', clubs: 'tréboles' };
+
+function suitName(suit) {
+    const names = (typeof pCurrentLang !== 'undefined' && pCurrentLang === 'es') ? RB_SUIT_NAMES_ES : RB_SUIT_NAMES_EN;
+    return names[suit] || suit;
+}
+
+function cardStr(card) {
+    return card.rank + SUIT_SYMBOLS[card.suit];
+}
+
+function boardCardsStr(cards) {
+    return cards.map(cardStr).join(', ');
+}
+
+// ============================================
 // QUESTION DEFINITIONS
 // ============================================
 
-// Each question has: id, text, check function (returns true for YES, false for NO)
 const ALL_QUESTIONS = [
     // Made Hand Questions
     {
@@ -31,27 +50,61 @@ const ALL_QUESTIONS = [
             board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
             return Math.max(...Object.values(suitCounts)) >= 3;
         },
+        explain: (board, answer) => {
+            const suitCounts = {};
+            board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+            if (answer) {
+                const flushSuit = Object.entries(suitCounts).find(([s, c]) => c >= 3)[0];
+                const suited = board.filter(c => c.suit === flushSuit);
+                return pt('rb.e.flush_possible_yes', suited.length, SUIT_SYMBOLS[flushSuit], suitName(flushSuit));
+            } else {
+                const maxCount = Math.max(...Object.values(suitCounts));
+                return pt('rb.e.flush_possible_no', maxCount);
+            }
+        },
         minCards: 3
     },
     {
         id: 'straight_possible',
         text: 'Is a straight possible?',
         check: (board) => {
-            // Check if 5 cards can form a straight using board + 2 hole cards
             const values = board.map(c => c.value);
-            if (values.includes(14)) values.push(1); // Ace low
+            if (values.includes(14)) values.push(1);
             const unique = [...new Set(values)].sort((a,b) => a-b);
             
-            // Check all possible 5-card windows
             for (let start = 1; start <= 10; start++) {
                 let count = 0;
                 for (let v = start; v < start + 5; v++) {
                     if (unique.includes(v)) count++;
                 }
-                // Need at least 3 board cards in the window (others from hole cards)
                 if (count >= 3) return true;
             }
             return false;
+        },
+        explain: (board, answer) => {
+            if (answer) {
+                const values = board.map(c => c.value);
+                if (values.includes(14)) values.push(1);
+                const unique = [...new Set(values)].sort((a,b) => a-b);
+                
+                // Find the best window
+                let bestStart = 1, bestCount = 0;
+                for (let start = 1; start <= 10; start++) {
+                    let count = 0;
+                    for (let v = start; v < start + 5; v++) {
+                        if (unique.includes(v)) count++;
+                    }
+                    if (count > bestCount) { bestCount = count; bestStart = start; }
+                }
+                const windowCards = [];
+                for (let v = bestStart; v < bestStart + 5; v++) {
+                    const card = board.find(c => c.value === v || (v === 1 && c.value === 14));
+                    if (card) windowCards.push(cardStr(card));
+                }
+                return pt('rb.e.straight_possible_yes', windowCards.join(', '), 5 - bestCount);
+            } else {
+                return pt('rb.e.straight_possible_no');
+            }
         },
         minCards: 3
     },
@@ -63,6 +116,16 @@ const ALL_QUESTIONS = [
             board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
             return Math.max(...Object.values(rankCounts)) >= 2;
         },
+        explain: (board, answer) => {
+            if (answer) {
+                const rankCounts = {};
+                board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+                const paired = Object.entries(rankCounts).filter(([r, c]) => c >= 2).map(([r]) => r);
+                return pt('rb.e.board_paired_yes', paired.join(', '));
+            } else {
+                return pt('rb.e.board_paired_no');
+            }
+        },
         minCards: 3
     },
     {
@@ -73,6 +136,19 @@ const ALL_QUESTIONS = [
             board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
             return Math.max(...Object.values(rankCounts)) >= 3;
         },
+        explain: (board, answer) => {
+            if (answer) {
+                const rankCounts = {};
+                board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+                const trips = Object.entries(rankCounts).filter(([r, c]) => c >= 3).map(([r]) => r);
+                return pt('rb.e.trips_on_board_yes', trips[0]);
+            } else {
+                const rankCounts = {};
+                board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+                const maxCount = Math.max(...Object.values(rankCounts));
+                return pt('rb.e.trips_on_board_no', maxCount);
+            }
+        },
         minCards: 3
     },
     {
@@ -82,6 +158,18 @@ const ALL_QUESTIONS = [
             const suitCounts = {};
             board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
             return Math.max(...Object.values(suitCounts)) >= 4;
+        },
+        explain: (board, answer) => {
+            const suitCounts = {};
+            board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+            if (answer) {
+                const flushSuit = Object.entries(suitCounts).find(([s, c]) => c >= 4)[0];
+                const suited = board.filter(c => c.suit === flushSuit);
+                return pt('rb.e.four_flush_yes', suited.length, SUIT_SYMBOLS[flushSuit], suitName(flushSuit));
+            } else {
+                const maxCount = Math.max(...Object.values(suitCounts));
+                return pt('rb.e.four_flush_no', maxCount);
+            }
         },
         minCards: 4
     },
@@ -102,16 +190,49 @@ const ALL_QUESTIONS = [
             }
             return false;
         },
+        explain: (board, answer) => {
+            if (answer) {
+                const values = board.map(c => c.value);
+                if (values.includes(14)) values.push(1);
+                const unique = [...new Set(values)].sort((a,b) => a-b);
+                
+                let bestStart = 1, bestCount = 0;
+                for (let start = 1; start <= 10; start++) {
+                    let count = 0;
+                    for (let v = start; v < start + 5; v++) {
+                        if (unique.includes(v)) count++;
+                    }
+                    if (count > bestCount) { bestCount = count; bestStart = start; }
+                }
+                const windowCards = [];
+                for (let v = bestStart; v < bestStart + 5; v++) {
+                    const card = board.find(c => c.value === v || (v === 1 && c.value === 14));
+                    if (card) windowCards.push(cardStr(card));
+                }
+                return pt('rb.e.four_straight_yes', windowCards.join(', '));
+            } else {
+                return pt('rb.e.four_straight_no');
+            }
+        },
         minCards: 4
     },
     {
         id: 'quads_possible',
         text: 'Could someone have quads?',
         check: (board) => {
-            // Quads possible if board has at least a pair
             const rankCounts = {};
             board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
             return Math.max(...Object.values(rankCounts)) >= 2;
+        },
+        explain: (board, answer) => {
+            if (answer) {
+                const rankCounts = {};
+                board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+                const paired = Object.entries(rankCounts).filter(([r, c]) => c >= 2).map(([r]) => r);
+                return pt('rb.e.quads_possible_yes', paired.join(', '));
+            } else {
+                return pt('rb.e.quads_possible_no');
+            }
         },
         minCards: 3
     },
@@ -124,6 +245,18 @@ const ALL_QUESTIONS = [
             const suits = new Set(board.map(c => c.suit));
             return suits.size === board.length || (board.length > 4 && suits.size >= 4);
         },
+        explain: (board, answer) => {
+            const suitCounts = {};
+            board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+            if (answer) {
+                const numSuits = Object.keys(suitCounts).length;
+                return pt('rb.e.rainbow_yes', numSuits);
+            } else {
+                const duped = Object.entries(suitCounts).filter(([s, c]) => c >= 2);
+                const suitInfo = duped.map(([s, c]) => `${c}× ${SUIT_SYMBOLS[s]}`).join(', ');
+                return pt('rb.e.rainbow_no', suitInfo);
+            }
+        },
         minCards: 3
     },
     {
@@ -132,6 +265,15 @@ const ALL_QUESTIONS = [
         check: (board) => {
             const suits = new Set(board.map(c => c.suit));
             return suits.size === 1;
+        },
+        explain: (board, answer) => {
+            if (answer) {
+                return pt('rb.e.monotone_yes', SUIT_SYMBOLS[board[0].suit], suitName(board[0].suit));
+            } else {
+                const suits = [...new Set(board.map(c => c.suit))];
+                const suitList = suits.map(s => SUIT_SYMBOLS[s]).join(' ');
+                return pt('rb.e.monotone_no', suits.length, suitList);
+            }
         },
         minCards: 3
     },
@@ -155,18 +297,59 @@ const ALL_QUESTIONS = [
             }
             return maxConnected >= 3;
         },
+        explain: (board, answer) => {
+            if (answer) {
+                const values = board.map(c => c.value);
+                if (values.includes(14)) values.push(1);
+                const sorted = [...new Set(values)].sort((a,b) => a-b);
+                
+                // Find the connected run
+                let bestRun = [sorted[0]];
+                let currentRun = [sorted[0]];
+                for (let i = 1; i < sorted.length; i++) {
+                    if (sorted[i] === sorted[i-1] + 1) {
+                        currentRun.push(sorted[i]);
+                        if (currentRun.length > bestRun.length) bestRun = [...currentRun];
+                    } else {
+                        currentRun = [sorted[i]];
+                    }
+                }
+                const runCards = bestRun.map(v => {
+                    const card = board.find(c => c.value === v || (v === 1 && c.value === 14));
+                    return card ? cardStr(card) : v;
+                });
+                return pt('rb.e.three_straight_yes', runCards.join(', '));
+            } else {
+                return pt('rb.e.three_straight_no');
+            }
+        },
         minCards: 3
     },
     {
         id: 'disconnected',
         text: 'Is the board disconnected?',
         check: (board) => {
-            // Disconnected = no two cards within 3 ranks of each other (excluding pairs)
             const values = [...new Set(board.map(c => c.value))].sort((a,b) => a-b);
             for (let i = 1; i < values.length; i++) {
                 if (values[i] - values[i-1] <= 3) return false;
             }
             return true;
+        },
+        explain: (board, answer) => {
+            if (answer) {
+                return pt('rb.e.disconnected_yes');
+            } else {
+                const values = [...new Set(board.map(c => c.value))].sort((a,b) => a-b);
+                // Find the closest pair
+                let minGap = 99, closeA = 0, closeB = 0;
+                for (let i = 1; i < values.length; i++) {
+                    const gap = values[i] - values[i-1];
+                    if (gap < minGap) { minGap = gap; closeA = values[i-1]; closeB = values[i]; }
+                }
+                const cardA = board.find(c => c.value === closeA);
+                const cardB = board.find(c => c.value === closeB);
+                return pt('rb.e.disconnected_no', cardStr(cardA), cardStr(cardB), minGap);
+            }
         },
         minCards: 3
     },
@@ -174,6 +357,14 @@ const ALL_QUESTIONS = [
         id: 'ace_on_board',
         text: 'Is there an Ace on the board?',
         check: (board) => board.some(c => c.rank === 'A'),
+        explain: (board, answer) => {
+            if (answer) {
+                const aces = board.filter(c => c.rank === 'A');
+                return pt('rb.e.ace_on_board_yes', boardCardsStr(aces));
+            } else {
+                return pt('rb.e.ace_on_board_no');
+            }
+        },
         minCards: 3
     },
     {
@@ -183,18 +374,45 @@ const ALL_QUESTIONS = [
             const broadway = ['T', 'J', 'Q', 'K', 'A'];
             return board.some(c => broadway.includes(c.rank));
         },
+        explain: (board, answer) => {
+            const broadway = ['T', 'J', 'Q', 'K', 'A'];
+            if (answer) {
+                const bCards = board.filter(c => broadway.includes(c.rank));
+                return pt('rb.e.broadway_cards_yes', boardCardsStr(bCards));
+            } else {
+                return pt('rb.e.broadway_cards_no');
+            }
+        },
         minCards: 3
     },
     {
         id: 'low_board',
         text: 'Are all cards 8 or below?',
         check: (board) => board.every(c => c.value <= 8),
+        explain: (board, answer) => {
+            if (answer) {
+                const highest = board.reduce((a, b) => a.value > b.value ? a : b);
+                return pt('rb.e.low_board_yes', cardStr(highest));
+            } else {
+                const highCards = board.filter(c => c.value > 8);
+                return pt('rb.e.low_board_no', boardCardsStr(highCards));
+            }
+        },
         minCards: 3
     },
     {
         id: 'high_board',
         text: 'Are all cards 9 or higher?',
         check: (board) => board.every(c => c.value >= 9),
+        explain: (board, answer) => {
+            if (answer) {
+                const lowest = board.reduce((a, b) => a.value < b.value ? a : b);
+                return pt('rb.e.high_board_yes', cardStr(lowest));
+            } else {
+                const lowCards = board.filter(c => c.value < 9);
+                return pt('rb.e.high_board_no', boardCardsStr(lowCards));
+            }
+        },
         minCards: 3
     },
     
@@ -203,7 +421,6 @@ const ALL_QUESTIONS = [
         id: 'straight_flush_possible',
         text: 'Could the nuts be a straight flush?',
         check: (board) => {
-            // Check if 3+ suited cards within a 5-card straight window
             for (const suit of SUITS) {
                 const suitedCards = board.filter(c => c.suit === suit);
                 if (suitedCards.length >= 3) {
@@ -221,6 +438,27 @@ const ALL_QUESTIONS = [
             }
             return false;
         },
+        explain: (board, answer) => {
+            if (answer) {
+                for (const suit of SUITS) {
+                    const suitedCards = board.filter(c => c.suit === suit);
+                    if (suitedCards.length >= 3) {
+                        const values = suitedCards.map(c => c.value);
+                        if (values.includes(14)) values.push(1);
+                        for (let start = 1; start <= 10; start++) {
+                            let count = 0;
+                            for (let v = start; v < start + 5; v++) {
+                                if (values.includes(v)) count++;
+                            }
+                            if (count >= 3) {
+                                return pt('rb.e.straight_flush_possible_yes', suitedCards.length, SUIT_SYMBOLS[suit]);
+                            }
+                        }
+                    }
+                }
+            }
+            return pt('rb.e.straight_flush_possible_no');
+        },
         minCards: 3
     },
     {
@@ -234,6 +472,15 @@ const ALL_QUESTIONS = [
                 if (boardRanks.includes(r)) wheelCount++;
             }
             return wheelCount >= 3;
+        },
+        explain: (board, answer) => {
+            const wheelRanks = ['A', '2', '3', '4', '5'];
+            const wheelCards = board.filter(c => wheelRanks.includes(c.rank));
+            if (answer) {
+                return pt('rb.e.wheel_possible_yes', wheelCards.length, boardCardsStr(wheelCards), 5 - wheelCards.length);
+            } else {
+                return pt('rb.e.wheel_possible_no', wheelCards.length);
+            }
         },
         minCards: 3
     },
@@ -249,12 +496,24 @@ const ALL_QUESTIONS = [
             }
             return count >= 3;
         },
+        explain: (board, answer) => {
+            const broadwayRanks = ['A', 'K', 'Q', 'J', 'T'];
+            const bCards = board.filter(c => broadwayRanks.includes(c.rank));
+            if (answer) {
+                return pt('rb.e.broadway_straight_yes', bCards.length, boardCardsStr(bCards));
+            } else {
+                return pt('rb.e.broadway_straight_no', bCards.length);
+            }
+        },
         minCards: 3
     },
     {
         id: 'playing_the_board',
         text: 'Could someone play the board?',
-        check: (board) => board.length === 5, // Always possible on river
+        check: (board) => board.length === 5,
+        explain: (board, answer) => {
+            return pt('rb.e.playing_the_board');
+        },
         minCards: 5
     },
     {
@@ -265,19 +524,29 @@ const ALL_QUESTIONS = [
             board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
             return Object.values(suitCounts).some(count => count >= 2);
         },
+        explain: (board, answer) => {
+            const suitCounts = {};
+            board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+            if (answer) {
+                const drawSuit = Object.entries(suitCounts).find(([s, c]) => c >= 2)[0];
+                const suited = board.filter(c => c.suit === drawSuit);
+                return pt('rb.e.flush_draw_possible_yes', suited.length, SUIT_SYMBOLS[drawSuit]);
+            } else {
+                return pt('rb.e.flush_draw_possible_no');
+            }
+        },
         minCards: 3,
-        maxCards: 4 // Only relevant on flop/turn
+        maxCards: 4
     },
     {
         id: 'oesd_possible',
         text: 'Is an open-ended straight draw possible?',
         check: (board) => {
-            // OESD possible if 2+ cards within a 4-card window (not at edges)
             const values = board.map(c => c.value);
             if (values.includes(14)) values.push(1);
             const unique = [...new Set(values)].sort((a,b) => a-b);
             
-            for (let start = 2; start <= 10; start++) { // 2-5 through T-K windows
+            for (let start = 2; start <= 10; start++) {
                 let count = 0;
                 for (let v = start; v < start + 4; v++) {
                     if (unique.includes(v)) count++;
@@ -285,6 +554,13 @@ const ALL_QUESTIONS = [
                 if (count >= 2) return true;
             }
             return false;
+        },
+        explain: (board, answer) => {
+            if (answer) {
+                return pt('rb.e.oesd_possible_yes');
+            } else {
+                return pt('rb.e.oesd_possible_no');
+            }
         },
         minCards: 3,
         maxCards: 4
@@ -298,16 +574,40 @@ const ALL_QUESTIONS = [
             const pairs = Object.values(rankCounts).filter(c => c >= 2);
             return pairs.length >= 2;
         },
+        explain: (board, answer) => {
+            const rankCounts = {};
+            board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+            if (answer) {
+                const pairs = Object.entries(rankCounts).filter(([r, c]) => c >= 2).map(([r]) => r);
+                return pt('rb.e.two_pair_board_yes', pairs.join(', '));
+            } else {
+                const pairCount = Object.values(rankCounts).filter(c => c >= 2).length;
+                return pt('rb.e.two_pair_board_no', pairCount);
+            }
+        },
         minCards: 4
     },
     {
         id: 'full_house_possible',
         text: 'Is a full house possible?',
         check: (board) => {
-            // Full house possible if board is paired OR has 3+ cards
             const rankCounts = {};
             board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
             return Math.max(...Object.values(rankCounts)) >= 2 || board.length >= 3;
+        },
+        explain: (board, answer) => {
+            const rankCounts = {};
+            board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+            if (answer) {
+                const maxCount = Math.max(...Object.values(rankCounts));
+                if (maxCount >= 2) {
+                    const paired = Object.entries(rankCounts).filter(([r, c]) => c >= 2).map(([r]) => r);
+                    return pt('rb.e.full_house_possible_paired', paired.join(', '));
+                }
+                return pt('rb.e.full_house_possible_generic');
+            } else {
+                return pt('rb.e.full_house_possible_no');
+            }
         },
         minCards: 3
     }
@@ -348,14 +648,12 @@ function initReadBoardMode() {
 // ============================================
 
 function getQuestionsForBoard(board) {
-    // Filter questions that apply to this board size
     const applicable = ALL_QUESTIONS.filter(q => {
         if (q.minCards && board.length < q.minCards) return false;
         if (q.maxCards && board.length > q.maxCards) return false;
         return true;
     });
     
-    // Shuffle and pick 3
     shuffle(applicable);
     return applicable.slice(0, 3);
 }
@@ -366,14 +664,11 @@ function newReadBoardRound() {
     rbResultEl.classList.add('hidden');
     rbCheckBtn.disabled = true;
     
-    // Deal a random board
     const deck = shuffle(createDeck());
     rbBoard = deck.slice(0, rbBoardSize);
     
-    // Get 3 random applicable questions
     rbQuestions = getQuestionsForBoard(rbBoard);
     
-    // Render
     renderRbBoard();
     renderQuestions();
 }
@@ -423,10 +718,8 @@ function renderQuestions() {
 function selectAnswer(questionId, answer, questionEl) {
     if (rbGameEnded) return;
     
-    // Store answer
     rbUserAnswers[questionId] = answer;
     
-    // Update button states
     const buttons = questionEl.querySelectorAll('.rb-answer-btn');
     buttons.forEach(btn => {
         btn.classList.remove('selected');
@@ -436,7 +729,6 @@ function selectAnswer(questionId, answer, questionEl) {
         }
     });
     
-    // Enable check button if all questions answered
     if (Object.keys(rbUserAnswers).length === 3) {
         rbCheckBtn.disabled = false;
     }
@@ -450,7 +742,6 @@ function checkReadBoardAnswers() {
     
     let correctAnswers = 0;
     
-    // Check each question
     rbQuestions.forEach(q => {
         const userAnswer = rbUserAnswers[q.id];
         const correctAnswer = q.check(rbBoard);
@@ -473,6 +764,14 @@ function checkReadBoardAnswers() {
                     btn.classList.add('correct-answer');
                 }
             });
+            
+            // Add explanation for wrong answers
+            if (q.explain) {
+                const explanationEl = document.createElement('div');
+                explanationEl.className = 'rb-explanation';
+                explanationEl.innerHTML = q.explain(rbBoard, correctAnswer);
+                questionEl.appendChild(explanationEl);
+            }
         }
     });
     

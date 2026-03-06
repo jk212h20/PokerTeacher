@@ -69,8 +69,10 @@ const SCENARIO_TEMPLATES = [
 
 // DOM elements for outs mode
 let outsBoardEl, yourHandEl, opponentHandEl, yourHandDescEl, opponentHandDescEl;
-let outsInputEl, checkOutsBtn, outsResultEl, outsResultMessageEl, outsExplanationEl, nextOutsBtn;
+let outsOptionsEl, outsResultEl, outsResultMessageEl, outsExplanationEl, nextOutsBtn;
 let outsStreakEl, outsCorrectEl, outsTotalEl, scenarioTextEl;
+let outsGameEnded = false;
+let outsOptions = [];
 
 // Initialize outs mode
 function initOutsMode() {
@@ -79,8 +81,7 @@ function initOutsMode() {
     opponentHandEl = document.getElementById('opponent-hand-cards');
     yourHandDescEl = document.getElementById('your-hand-desc');
     opponentHandDescEl = document.getElementById('opponent-hand-desc');
-    outsInputEl = document.getElementById('outs-input');
-    checkOutsBtn = document.getElementById('check-outs-btn');
+    outsOptionsEl = document.getElementById('outs-options');
     outsResultEl = document.getElementById('outs-result');
     outsResultMessageEl = document.getElementById('outs-result-message');
     outsExplanationEl = document.getElementById('outs-explanation');
@@ -90,15 +91,7 @@ function initOutsMode() {
     outsTotalEl = document.getElementById('outs-total');
     scenarioTextEl = document.getElementById('scenario-text');
     
-    checkOutsBtn.addEventListener('click', checkOutsAnswer);
     nextOutsBtn.addEventListener('click', newOutsRound);
-    
-    // Allow enter key to submit
-    outsInputEl.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            checkOutsAnswer();
-        }
-    });
 }
 
 // Calculate actual outs by simulating every possible river card
@@ -165,14 +158,71 @@ function isValidScenario(board, yourCards, opponentCards) {
     return true;
 }
 
+// Generate plausible wrong answers for outs (like Combo Counting style)
+function generateOutsOptions(correctOuts, remainingCards) {
+    const options = [];
+    
+    // Add correct answer
+    options.push({ count: correctOuts, isCorrect: true });
+    
+    // Generate wrong answers based on the correct count range
+    if (correctOuts <= 2) {
+        // Very few outs
+        options.push({ count: correctOuts + 2, isCorrect: false });
+        options.push({ count: correctOuts + 5, isCorrect: false });
+        options.push({ count: correctOuts + 8, isCorrect: false });
+    } else if (correctOuts <= 6) {
+        // Few outs (gutshot range)
+        options.push({ count: Math.max(1, correctOuts - 2), isCorrect: false });
+        options.push({ count: correctOuts + 3, isCorrect: false });
+        options.push({ count: correctOuts + 6, isCorrect: false });
+    } else if (correctOuts <= 10) {
+        // Medium outs (open-ender range)
+        options.push({ count: Math.max(1, correctOuts - 4), isCorrect: false });
+        options.push({ count: correctOuts + 3, isCorrect: false });
+        options.push({ count: correctOuts + 6, isCorrect: false });
+    } else if (correctOuts <= 15) {
+        // Many outs (flush draw + range)
+        options.push({ count: Math.max(1, correctOuts - 5), isCorrect: false });
+        options.push({ count: Math.max(1, correctOuts - 2), isCorrect: false });
+        options.push({ count: correctOuts + 4, isCorrect: false });
+    } else {
+        // Lots of outs (combo draw)
+        options.push({ count: Math.max(1, correctOuts - 6), isCorrect: false });
+        options.push({ count: Math.max(1, correctOuts - 3), isCorrect: false });
+        options.push({ count: Math.min(remainingCards, correctOuts + 4), isCorrect: false });
+    }
+    
+    // Ensure no duplicates
+    const seen = new Set();
+    const uniqueOptions = [];
+    for (const opt of options) {
+        if (!seen.has(opt.count)) {
+            seen.add(opt.count);
+            uniqueOptions.push(opt);
+        }
+    }
+    
+    // Fill in if duplicates removed
+    while (uniqueOptions.length < 4) {
+        const newCount = Math.max(0, correctOuts + Math.floor(Math.random() * 20) - 10);
+        if (!seen.has(newCount) && newCount >= 0) {
+            seen.add(newCount);
+            uniqueOptions.push({ count: newCount, isCorrect: false });
+        }
+    }
+    
+    // Shuffle options
+    shuffle(uniqueOptions);
+    return uniqueOptions;
+}
+
 // Start new outs round
 function newOutsRound() {
     // Reset UI
+    outsGameEnded = false;
     outsResultEl.classList.add('hidden');
-    outsInputEl.value = '';
-    outsInputEl.disabled = false;
-    checkOutsBtn.disabled = false;
-    outsInputEl.classList.remove('correct', 'wrong');
+    outsExplanationEl.innerHTML = '';
     
     // Try to find a valid scenario
     let attempts = 0;
@@ -235,15 +285,21 @@ function newOutsRound() {
     currentOutsScenario.outCards = outsResult.outCards;
     currentOutsScenario.status = outsResult.status;
     
+    // Calculate remaining cards for percentage display
+    const usedCards = [...outsBoard, ...yourHand, ...opponentHand];
+    const remainingCards = 52 - usedCards.length;
+    currentOutsScenario.remainingCards = remainingCards;
+    
+    // Generate multiple-choice options
+    outsOptions = generateOutsOptions(outsResult.outs, remainingCards);
+    
     // Render
     renderOutsBoard();
     renderOutsHands();
+    renderOutsOptions();
     
     // Update scenario text
-    scenarioTextEl.textContent = `${currentOutsScenario.category}: ${pt('outs.howMany')}`;
-    
-    // Focus input
-    setTimeout(() => outsInputEl.focus(), 100);
+    scenarioTextEl.innerHTML = pt('outs.howManyOf', remainingCards);
 }
 
 // Render the turn board
@@ -256,86 +312,110 @@ function renderOutsBoard() {
 
 // Render both hands
 function renderOutsHands() {
-    // Your hand - display in dealt order (random, like real poker)
     yourHandEl.innerHTML = '';
     for (const card of yourHand) {
         yourHandEl.appendChild(createCardElement(card));
     }
     
-    // Opponent hand - display in dealt order (random, like real poker)
     opponentHandEl.innerHTML = '';
     for (const card of opponentHand) {
         opponentHandEl.appendChild(createCardElement(card));
     }
     
-    // Show current hand descriptions
     const yourEval = evaluateHand(outsBoard, yourHand);
     const oppEval = evaluateHand(outsBoard, opponentHand);
     yourHandDescEl.textContent = getHandDescription(yourEval);
     opponentHandDescEl.textContent = getHandDescription(oppEval);
 }
 
-// Check the user's answer
-function checkOutsAnswer() {
-    const userAnswer = parseInt(outsInputEl.value, 10);
+// Render multiple-choice option buttons (matching Combo Counting style)
+function renderOutsOptions() {
+    outsOptionsEl.innerHTML = '';
     
-    if (isNaN(userAnswer) || userAnswer < 0) {
-        outsInputEl.classList.add('shake');
-        setTimeout(() => outsInputEl.classList.remove('shake'), 300);
-        return;
+    for (const opt of outsOptions) {
+        const btn = document.createElement('button');
+        btn.className = 'outs-option';
+        btn.dataset.count = opt.count;
+        btn.dataset.correct = opt.isCorrect;
+        
+        const pct = ((opt.count / currentOutsScenario.remainingCards) * 100).toFixed(1);
+        btn.innerHTML = `<span class="outs-count">${opt.count}</span><span class="outs-pct">(${pct}%)</span>`;
+        
+        btn.addEventListener('click', () => selectOutsOption(opt, btn));
+        outsOptionsEl.appendChild(btn);
     }
+}
+
+// Handle option selection (matching Combo Counting behavior)
+function selectOutsOption(option, element) {
+    if (outsGameEnded) return;
     
+    outsGameEnded = true;
     outsTotalCount++;
+    
+    // Disable all buttons
+    const buttons = outsOptionsEl.querySelectorAll('.outs-option');
+    buttons.forEach(btn => btn.disabled = true);
+    
+    // Mark selection
+    element.classList.add('selected');
+    
+    // Show correct answer
+    buttons.forEach(btn => {
+        if (btn.dataset.correct === 'true') {
+            btn.classList.add('correct');
+        }
+    });
+    
     const correctOuts = currentOutsScenario.correctOuts;
-    const correct = userAnswer === correctOuts;
     
-    outsInputEl.disabled = true;
-    checkOutsBtn.disabled = true;
-    
-    if (correct) {
+    if (option.isCorrect) {
         outsCorrectCount++;
         outsStreak++;
         outsResultMessageEl.textContent = pt('outs.correct');
         outsResultEl.className = 'result perfect';
-        outsInputEl.classList.add('correct');
     } else {
         outsStreak = 0;
+        element.classList.add('wrong');
         outsResultMessageEl.textContent = pt('outs.answer', correctOuts);
         outsResultEl.className = 'result failed';
-        outsInputEl.classList.add('wrong');
     }
     
-    // Show the out cards
+    // Show explanation with out cards (matching Combo Counting explanation style)
     displayOutCards();
     
     // Update stats
     updateOutsStats();
-    
-    // Show result
     outsResultEl.classList.remove('hidden');
 }
 
-// Display all the out cards
+// Display out cards explanation (styled like Combo Counting)
 function displayOutCards() {
     const outCards = currentOutsScenario.outCards;
+    const remaining = currentOutsScenario.remainingCards;
+    const pct = ((outCards.length / remaining) * 100).toFixed(1);
+    
+    let html = `<div class="outs-explanation-text">`;
+    html += pt('outs.explanationText', remaining, outCards.length, pct);
+    html += `</div>`;
     
     if (outCards.length === 0) {
-        outsExplanationEl.innerHTML = `<div class="outs-cards-label">${pt('outs.noOuts')}</div>`;
+        html += `<div class="outs-no-outs">${pt('outs.noOuts')}</div>`;
     } else {
         // Sort cards by rank for cleaner display
         const sortedCards = sortByValue([...outCards]);
         
-        let html = `<div class="outs-cards-label">${pt('outs.outCards')}:</div><div class="outs-cards-display">`;
+        // Group out cards by what draw they complete
+        html += `<div class="outs-cards-list">`;
+        html += `<div class="outs-cards-header">${pt('outs.outCards')}</div>`;
+        html += `<div class="outs-cards-grid">`;
         for (const card of sortedCards) {
-            const suitSymbol = SUIT_SYMBOLS[card.suit];
-            const isRed = card.suit === 'hearts' || card.suit === 'diamonds';
-            html += `<span class="out-card ${isRed ? 'red' : 'black'}">${card.rank}${suitSymbol}</span>`;
+            html += `<span class="outs-card-combo"><span class="${card.suit}">${card.display}${card.symbol}</span></span>`;
         }
-        html += '</div>';
-        outsExplanationEl.innerHTML = html;
+        html += `</div></div>`;
     }
     
-    outsExplanationEl.style.display = 'block';
+    outsExplanationEl.innerHTML = html;
 }
 
 // Update outs stats display
