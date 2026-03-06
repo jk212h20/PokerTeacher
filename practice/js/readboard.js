@@ -604,10 +604,75 @@ const ALL_QUESTIONS = [
     },
     {
         id: 'playing_the_board',
-        text: 'Could someone play the board?',
-        check: (board) => board.length === 5,
+        text: 'Does the board itself make a strong hand?',
+        check: (board) => {
+            if (board.length < 5) return false;
+            // Check if the 5-card board forms a complete hand: straight, flush, full house, quads, straight flush
+            const rankCounts = {};
+            board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+            const maxRank = Math.max(...Object.values(rankCounts));
+            const pairCount = Object.values(rankCounts).filter(c => c >= 2).length;
+            
+            // Full house (pair + trips)
+            if (maxRank >= 3 && pairCount >= 2) return true;
+            // Quads
+            if (maxRank >= 4) return true;
+            
+            // Flush
+            const suitCounts = {};
+            board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+            const isFlush = Math.max(...Object.values(suitCounts)) >= 5;
+            
+            // Straight
+            const values = board.map(c => c.value);
+            if (values.includes(14)) values.push(1);
+            const unique = [...new Set(values)].sort((a,b) => a-b);
+            let isStraight = false;
+            for (let start = 1; start <= 10; start++) {
+                let count = 0;
+                for (let v = start; v < start + 5; v++) {
+                    if (unique.includes(v)) count++;
+                }
+                if (count === 5) { isStraight = true; break; }
+            }
+            
+            return isFlush || isStraight;
+        },
         explain: (board, answer) => {
-            return pt('rb.e.playing_the_board');
+            if (answer) {
+                // Determine what the board makes
+                const rankCounts = {};
+                board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
+                const maxRank = Math.max(...Object.values(rankCounts));
+                const pairCount = Object.values(rankCounts).filter(c => c >= 2).length;
+                
+                const suitCounts = {};
+                board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+                const isFlush = Math.max(...Object.values(suitCounts)) >= 5;
+                
+                const values = board.map(c => c.value);
+                if (values.includes(14)) values.push(1);
+                const unique = [...new Set(values)].sort((a,b) => a-b);
+                let isStraight = false;
+                for (let start = 1; start <= 10; start++) {
+                    let count = 0;
+                    for (let v = start; v < start + 5; v++) {
+                        if (unique.includes(v)) count++;
+                    }
+                    if (count === 5) { isStraight = true; break; }
+                }
+                
+                const hands = [];
+                if (isFlush && isStraight) hands.push('straight flush');
+                else if (isFlush) hands.push('flush');
+                if (maxRank >= 4) hands.push('quads');
+                else if (maxRank >= 3 && pairCount >= 2) hands.push('full house');
+                if (isStraight && !isFlush) hands.push('straight');
+                
+                return pt('rb.e.playing_the_board_yes', hands.join(' / '), boardCardsStr(board));
+            } else {
+                return pt('rb.e.playing_the_board_no');
+            }
         },
         minCards: 5
     },
