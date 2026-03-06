@@ -36,6 +36,44 @@ function boardCardsStr(cards) {
     return cards.map(cardStr).join(', ');
 }
 
+// Value → rank character
+const VAL_TO_RANK = { 1: 'A', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: 'T', 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
+const ALL_SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
+
+/** Pick a suit not heavily used on board, for variety in examples */
+function pickOffSuit(board) {
+    const suitCounts = {};
+    board.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+    const sorted = ALL_SUITS.slice().sort((a, b) => (suitCounts[a] || 0) - (suitCounts[b] || 0));
+    return sorted[0];
+}
+
+/** Build a fake card string like "7♥" from value + suit, avoiding cards already on board */
+function fakeCard(value, suit, board) {
+    const rank = VAL_TO_RANK[value] || value;
+    // If this card is on the board, try other suits
+    const boardSet = new Set(board.map(c => c.rank + c.suit));
+    for (const s of [suit, ...ALL_SUITS.filter(x => x !== suit)]) {
+        if (!boardSet.has(rank + s)) {
+            return rank + SUIT_SYMBOLS[s];
+        }
+    }
+    return rank + SUIT_SYMBOLS[suit]; // fallback
+}
+
+/** Generate example text: "e.g., holding Xc Yd" */
+function exampleText(card1Str, card2Str) {
+    const lang = (typeof pCurrentLang !== 'undefined') ? pCurrentLang : 'en';
+    const prefix = lang === 'es' ? 'Ej: con' : 'E.g., holding';
+    return ` ${prefix} <strong>${card1Str} ${card2Str}</strong>`;
+}
+
+function exampleText1(card1Str) {
+    const lang = (typeof pCurrentLang !== 'undefined') ? pCurrentLang : 'en';
+    const prefix = lang === 'es' ? 'Ej: con' : 'E.g., holding';
+    return ` ${prefix} <strong>${card1Str}</strong>`;
+}
+
 // ============================================
 // QUESTION DEFINITIONS
 // ============================================
@@ -56,7 +94,15 @@ const ALL_QUESTIONS = [
             if (answer) {
                 const flushSuit = Object.entries(suitCounts).find(([s, c]) => c >= 3)[0];
                 const suited = board.filter(c => c.suit === flushSuit);
-                return pt('rb.e.flush_possible_yes', suited.length, SUIT_SYMBOLS[flushSuit], suitName(flushSuit));
+                // Example: pick two cards of that suit not on board
+                const boardValues = new Set(suited.map(c => c.value));
+                const need = 5 - suited.length;
+                const exCards = [];
+                for (let v = 14; v >= 2 && exCards.length < need; v--) {
+                    if (!boardValues.has(v)) exCards.push(fakeCard(v, flushSuit, board));
+                }
+                const base = pt('rb.e.flush_possible_yes', suited.length, SUIT_SYMBOLS[flushSuit], suitName(flushSuit));
+                return base + exampleText(exCards[0], exCards[1] || exCards[0]);
             } else {
                 const maxCount = Math.max(...Object.values(suitCounts));
                 return pt('rb.e.flush_possible_no', maxCount);
@@ -97,11 +143,22 @@ const ALL_QUESTIONS = [
                     if (count > bestCount) { bestCount = count; bestStart = start; }
                 }
                 const windowCards = [];
+                const missing = [];
                 for (let v = bestStart; v < bestStart + 5; v++) {
                     const card = board.find(c => c.value === v || (v === 1 && c.value === 14));
                     if (card) windowCards.push(cardStr(card));
+                    else missing.push(v);
                 }
-                return pt('rb.e.straight_possible_yes', windowCards.join(', '), 5 - bestCount);
+                const base = pt('rb.e.straight_possible_yes', windowCards.join(', '), 5 - bestCount);
+                if (missing.length >= 2) {
+                    const s = pickOffSuit(board);
+                    return base + exampleText(fakeCard(missing[0], s, board), fakeCard(missing[1], s, board));
+                } else if (missing.length === 1) {
+                    const s = pickOffSuit(board);
+                    const s2 = ALL_SUITS.find(x => x !== s) || s;
+                    return base + exampleText(fakeCard(missing[0], s, board), fakeCard(missing[0] > 7 ? 2 : 14, s2, board));
+                }
+                return base;
             } else {
                 return pt('rb.e.straight_possible_no');
             }
@@ -165,7 +222,11 @@ const ALL_QUESTIONS = [
             if (answer) {
                 const flushSuit = Object.entries(suitCounts).find(([s, c]) => c >= 4)[0];
                 const suited = board.filter(c => c.suit === flushSuit);
-                return pt('rb.e.four_flush_yes', suited.length, SUIT_SYMBOLS[flushSuit], suitName(flushSuit));
+                const boardValues = new Set(suited.map(c => c.value));
+                let exV = 14;
+                while (boardValues.has(exV) && exV >= 2) exV--;
+                const base = pt('rb.e.four_flush_yes', suited.length, SUIT_SYMBOLS[flushSuit], suitName(flushSuit));
+                return base + exampleText1(fakeCard(exV, flushSuit, board));
             } else {
                 const maxCount = Math.max(...Object.values(suitCounts));
                 return pt('rb.e.four_flush_no', maxCount);
@@ -205,11 +266,18 @@ const ALL_QUESTIONS = [
                     if (count > bestCount) { bestCount = count; bestStart = start; }
                 }
                 const windowCards = [];
+                let missingV = null;
                 for (let v = bestStart; v < bestStart + 5; v++) {
                     const card = board.find(c => c.value === v || (v === 1 && c.value === 14));
                     if (card) windowCards.push(cardStr(card));
+                    else missingV = v;
                 }
-                return pt('rb.e.four_straight_yes', windowCards.join(', '));
+                const base = pt('rb.e.four_straight_yes', windowCards.join(', '));
+                if (missingV) {
+                    const s = pickOffSuit(board);
+                    return base + exampleText1(fakeCard(missingV, s, board));
+                }
+                return base;
             } else {
                 return pt('rb.e.four_straight_no');
             }
@@ -229,7 +297,12 @@ const ALL_QUESTIONS = [
                 const rankCounts = {};
                 board.forEach(c => rankCounts[c.rank] = (rankCounts[c.rank] || 0) + 1);
                 const paired = Object.entries(rankCounts).filter(([r, c]) => c >= 2).map(([r]) => r);
-                return pt('rb.e.quads_possible_yes', paired.join(', '));
+                const r = paired[0];
+                const boardSuits = new Set(board.filter(c => c.rank === r).map(c => c.suit));
+                const needSuits = ALL_SUITS.filter(s => !boardSuits.has(s));
+                const ex1 = r + SUIT_SYMBOLS[needSuits[0] || 'spades'];
+                const ex2 = r + SUIT_SYMBOLS[needSuits[1] || needSuits[0] || 'clubs'];
+                return pt('rb.e.quads_possible_yes', paired.join(', ')) + exampleText(ex1, ex2);
             } else {
                 return pt('rb.e.quads_possible_no');
             }
@@ -451,7 +524,15 @@ const ALL_QUESTIONS = [
                                 if (values.includes(v)) count++;
                             }
                             if (count >= 3) {
-                                return pt('rb.e.straight_flush_possible_yes', suitedCards.length, SUIT_SYMBOLS[suit]);
+                                // Find missing values for example
+                                const missingVals = [];
+                                for (let v2 = start; v2 < start + 5; v2++) {
+                                    if (!values.includes(v2)) missingVals.push(v2);
+                                }
+                                const base = pt('rb.e.straight_flush_possible_yes', suitedCards.length, SUIT_SYMBOLS[suit]);
+                                if (missingVals.length >= 2) return base + exampleText(fakeCard(missingVals[0], suit, board), fakeCard(missingVals[1], suit, board));
+                                if (missingVals.length === 1) return base + exampleText1(fakeCard(missingVals[0], suit, board));
+                                return base;
                             }
                         }
                     }
@@ -477,7 +558,14 @@ const ALL_QUESTIONS = [
             const wheelRanks = ['A', '2', '3', '4', '5'];
             const wheelCards = board.filter(c => wheelRanks.includes(c.rank));
             if (answer) {
-                return pt('rb.e.wheel_possible_yes', wheelCards.length, boardCardsStr(wheelCards), 5 - wheelCards.length);
+                const wheelValues = [14, 2, 3, 4, 5];
+                const onBoard = new Set(wheelCards.map(c => c.rank));
+                const missing = wheelValues.filter(v => !onBoard.has(VAL_TO_RANK[v]));
+                const s = pickOffSuit(board);
+                const base = pt('rb.e.wheel_possible_yes', wheelCards.length, boardCardsStr(wheelCards), 5 - wheelCards.length);
+                if (missing.length >= 2) return base + exampleText(fakeCard(missing[0], s, board), fakeCard(missing[1], s, board));
+                if (missing.length === 1) return base + exampleText1(fakeCard(missing[0], s, board));
+                return base;
             } else {
                 return pt('rb.e.wheel_possible_no', wheelCards.length);
             }
@@ -500,7 +588,14 @@ const ALL_QUESTIONS = [
             const broadwayRanks = ['A', 'K', 'Q', 'J', 'T'];
             const bCards = board.filter(c => broadwayRanks.includes(c.rank));
             if (answer) {
-                return pt('rb.e.broadway_straight_yes', bCards.length, boardCardsStr(bCards));
+                const broadwayValues = { 'A': 14, 'K': 13, 'Q': 12, 'J': 11, 'T': 10 };
+                const onBoard = new Set(bCards.map(c => c.rank));
+                const missingRanks = broadwayRanks.filter(r => !onBoard.has(r));
+                const s = pickOffSuit(board);
+                const base = pt('rb.e.broadway_straight_yes', bCards.length, boardCardsStr(bCards));
+                if (missingRanks.length >= 2) return base + exampleText(fakeCard(broadwayValues[missingRanks[0]], s, board), fakeCard(broadwayValues[missingRanks[1]], s, board));
+                if (missingRanks.length === 1) return base + exampleText1(fakeCard(broadwayValues[missingRanks[0]], s, board));
+                return base;
             } else {
                 return pt('rb.e.broadway_straight_no', bCards.length);
             }
@@ -530,7 +625,13 @@ const ALL_QUESTIONS = [
             if (answer) {
                 const drawSuit = Object.entries(suitCounts).find(([s, c]) => c >= 2)[0];
                 const suited = board.filter(c => c.suit === drawSuit);
-                return pt('rb.e.flush_draw_possible_yes', suited.length, SUIT_SYMBOLS[drawSuit]);
+                const boardValues = new Set(suited.map(c => c.value));
+                const exCards = [];
+                for (let v = 14; v >= 2 && exCards.length < 2; v--) {
+                    if (!boardValues.has(v)) exCards.push(fakeCard(v, drawSuit, board));
+                }
+                const base = pt('rb.e.flush_draw_possible_yes', suited.length, SUIT_SYMBOLS[drawSuit]);
+                return base + exampleText(exCards[0], exCards[1]);
             } else {
                 return pt('rb.e.flush_draw_possible_no');
             }
@@ -602,9 +703,23 @@ const ALL_QUESTIONS = [
                 const maxCount = Math.max(...Object.values(rankCounts));
                 if (maxCount >= 2) {
                     const paired = Object.entries(rankCounts).filter(([r, c]) => c >= 2).map(([r]) => r);
-                    return pt('rb.e.full_house_possible_paired', paired.join(', '));
+                    // Example: holding a pocket pair of the highest unpaired rank
+                    const unpaired = Object.entries(rankCounts).filter(([r, c]) => c === 1).map(([r]) => r);
+                    const base = pt('rb.e.full_house_possible_paired', paired.join(', '));
+                    if (unpaired.length > 0) {
+                        const r = unpaired[0];
+                        const usedSuits = new Set(board.filter(c => c.rank === r).map(c => c.suit));
+                        const avail = ALL_SUITS.filter(s => !usedSuits.has(s));
+                        return base + exampleText(r + SUIT_SYMBOLS[avail[0] || 'spades'], r + SUIT_SYMBOLS[avail[1] || avail[0] || 'clubs']);
+                    }
+                    return base;
                 }
-                return pt('rb.e.full_house_possible_generic');
+                // No pair on board — player needs pocket pair to hit trips + board card pair
+                const highRank = board.reduce((a, b) => a.value > b.value ? a : b);
+                const base = pt('rb.e.full_house_possible_generic');
+                const usedSuits = new Set(board.filter(c => c.rank === highRank.rank).map(c => c.suit));
+                const avail = ALL_SUITS.filter(s => !usedSuits.has(s));
+                return base + exampleText(highRank.rank + SUIT_SYMBOLS[avail[0] || 'spades'], highRank.rank + SUIT_SYMBOLS[avail[1] || avail[0] || 'clubs']);
             } else {
                 return pt('rb.e.full_house_possible_no');
             }
