@@ -1178,12 +1178,75 @@ header h1 {
     margin-bottom: 16px;
 }
 
-.result.perfect #p5-result-message {
+.result.perfect #p5-result-message { 
     color: var(--success);
 }
 
 .result.failed #p5-result-message {
     color: var(--danger);
+}
+
+
+/* Pick 5 hand comparison (shown on wrong answer) */
+.p5-comparison {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+}
+
+.p5-compare-hand {
+    background: var(--hand-bg);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+    flex: 1;
+    max-width: 200px;
+    min-width: 140px;
+}
+
+.p5-compare-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.p5-compare-label.yours {
+    color: var(--danger);
+}
+
+.p5-compare-label.best {
+    color: var(--success);
+}
+
+.p5-compare-cards {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-bottom: 6px;
+}
+
+.p5-compare-cards .card {
+    width: 36px;
+    height: 50px;
+    border: none;
+}
+
+.p5-compare-cards .card .rank {
+    font-size: 2rem;
+}
+
+.p5-compare-cards .card .card-corner {
+    font-size: 0.75rem;
+}
+
+.p5-compare-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
 .pick5-theme .menu-item.active {

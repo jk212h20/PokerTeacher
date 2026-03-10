@@ -83,6 +83,10 @@ function newPick5Round() {
     p5HandDescEl.textContent = '';
     p5BestHandDescEl.textContent = '';
     
+    // Clear comparison
+    const compEl = document.getElementById('p5-comparison');
+    if (compEl) compEl.innerHTML = '';
+    
     // Reset button states
     p5CheckBtn.disabled = true;
     
@@ -165,8 +169,7 @@ function checkPick5Selection() {
     const userHand = evaluate5Cards(p5SelectedCards);
     const isOptimal = isOptimalSelection(p5SelectedCards, p5Cards);
     
-    // Show user's hand
-    p5HandDescEl.textContent = `${pt('p5.yourHand')}: ${getHandDescription(userHand)}`;
+    // Show user's hand description (only for correct answers; wrong answers show comparison)
     
     // Disable card clicking
     const cardEls = p5CardsEl.querySelectorAll('.p5-card');
@@ -177,6 +180,7 @@ function checkPick5Selection() {
     if (isOptimal) {
         p5CorrectCount++;
         p5Streak++;
+        p5HandDescEl.textContent = getHandDescription(userHand);
         p5ResultMessageEl.textContent = pt('p5.perfect');
         p5ResultEl.className = 'result perfect';
         
@@ -206,8 +210,8 @@ function checkPick5Selection() {
             }
         });
         
-        // Show best hand
-        p5BestHandDescEl.textContent = `${pt('p5.bestHand')}: ${getHandDescription(p5BestHand.hand)}`;
+        // Show side-by-side comparison with actual cards
+        showPick5Comparison(p5SelectedCards, userHand, p5BestHand.cards, p5BestHand.hand);
     }
     
     // Update stats
@@ -222,4 +226,50 @@ function updatePick5Stats() {
     p5StreakEl.textContent = p5Streak;
     p5CorrectEl.textContent = p5CorrectCount;
     p5TotalEl.textContent = p5TotalCount;
+}
+
+
+// Show side-by-side card comparison for wrong answers
+function showPick5Comparison(selectedCards, selectedEval, bestCards, bestEval) {
+    const container = document.getElementById('p5-comparison');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    // Sort both hands by value for display
+    const sortedSelected = [...selectedCards].sort((a, b) => b.value - a.value);
+    const sortedBest = [...bestCards].sort((a, b) => b.value - a.value);
+    
+    // Your hand
+    const yourDiv = document.createElement('div');
+    yourDiv.className = 'p5-compare-hand';
+    yourDiv.innerHTML = '<div class="p5-compare-label yours">' + pt('p5.yourHand') + '</div>';
+    const yourCards = document.createElement('div');
+    yourCards.className = 'p5-compare-cards';
+    for (const card of sortedSelected) {
+        yourCards.appendChild(createCardElement(card));
+    }
+    yourDiv.appendChild(yourCards);
+    const yourDesc = document.createElement('div');
+    yourDesc.className = 'p5-compare-desc';
+    yourDesc.textContent = getHandDescription(selectedEval);
+    yourDiv.appendChild(yourDesc);
+    
+    // Best hand
+    const bestDiv = document.createElement('div');
+    bestDiv.className = 'p5-compare-hand';
+    bestDiv.innerHTML = '<div class="p5-compare-label best">' + pt('p5.bestHand') + '</div>';
+    const bestCardsDiv = document.createElement('div');
+    bestCardsDiv.className = 'p5-compare-cards';
+    for (const card of sortedBest) {
+        bestCardsDiv.appendChild(createCardElement(card));
+    }
+    bestDiv.appendChild(bestCardsDiv);
+    const bestDesc = document.createElement('div');
+    bestDesc.className = 'p5-compare-desc';
+    bestDesc.textContent = getHandDescription(bestEval);
+    bestDiv.appendChild(bestDesc);
+    
+    container.appendChild(yourDiv);
+    container.appendChild(bestDiv);
 }
