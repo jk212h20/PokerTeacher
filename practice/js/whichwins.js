@@ -11,7 +11,7 @@ let wwTotalCount = 0;
 let wwGameEnded = false;
 
 // DOM elements
-let wwBoardEl, wwHand1El, wwHand2El, wwHand1DescEl, wwHand2DescEl;
+let wwBoardEl, wwHand1El, wwHand2El;
 let wwChoice1Btn, wwChoiceTieBtn, wwChoice2Btn;
 let wwResultEl, wwResultMessageEl, nextWwBtn;
 let wwStreakEl, wwCorrectEl, wwTotalEl;
@@ -1129,8 +1129,6 @@ function initWhichWinsMode() {
     wwBoardEl = document.getElementById('ww-board-cards');
     wwHand1El = document.getElementById('ww-hand1-cards');
     wwHand2El = document.getElementById('ww-hand2-cards');
-    wwHand1DescEl = document.getElementById('ww-hand1-desc');
-    wwHand2DescEl = document.getElementById('ww-hand2-desc');
     wwChoice1Btn = document.getElementById('ww-choice-1');
     wwChoiceTieBtn = document.getElementById('ww-choice-tie');
     wwChoice2Btn = document.getElementById('ww-choice-2');
@@ -1238,11 +1236,6 @@ function renderWwHands() {
         wwHand2El.appendChild(createCardElement(card));
     }
     
-    // Show hand descriptions
-    const eval1 = evaluateHand(wwBoard, wwHand1);
-    const eval2 = evaluateHand(wwBoard, wwHand2);
-    wwHand1DescEl.textContent = getHandDescription(eval1);
-    wwHand2DescEl.textContent = getHandDescription(eval2);
 }
 
 // Handle user choice
